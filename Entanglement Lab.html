@@ -405,6 +405,7 @@
   :root[data-theme="dark"] #sp-fig [style*="fill:#ffffff"]{ fill:var(--paper) !important; }
   :root[data-theme="dark"] #sp-fig [style*="fill:#000000"]{ fill:var(--ink) !important; }
   /* pump laser: off at gen = 0, glowing more strongly as gen rises */
+  #sp-photons circle{ fill:#ff0505; }
   #sp-laser-beam{ transition: opacity .3s, filter .3s; }
   #sp-laser-beam.off{ opacity:0; }
   #sp-laser-beam.glow-1{ filter: drop-shadow(0 0 2px rgba(80,60,255,0.55)); }
@@ -946,25 +947,10 @@
        d="m 789.02793,747.42733 -67.5,67.5"
        style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:7.5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
     <path
-       style="fill:none;stroke:#ff0505;stroke-width:5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:5, 5;stroke-dashoffset:0;stroke-opacity:1"
-       d="M 642.6795,675.04168 600.43044,607.16004"
-       id="spf-path7230-4-5-8-6" />
-    <path
        style="fill:none;stroke:#3720e4;stroke-width:10;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
        d="M 515,782.36218 H 250"
        id="sp-laser-beam" />
-    <path
-       style="fill:none;stroke:#ff0505;stroke-width:5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:5, 5;stroke-dashoffset:0;stroke-opacity:1"
-       d="M 685.00002,912.36218 460,782.36218"
-       id="spf-path7230-4-5" />
-    <path
-       style="fill:none;stroke:#ff0505;stroke-width:5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:5,5;stroke-dashoffset:0;stroke-opacity:1"
-       d="m 600,956.59296 40,-69.23078"
-       id="spf-path7230-4-5-8" />
-    <path
-       style="fill:none;stroke:#ff0505;stroke-width:5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:5, 5;stroke-dashoffset:0;stroke-opacity:1"
-       d="M 685.00002,652.36218 460,782.36218"
-       id="spf-path7230-4-5-5" />
+    <g id="sp-photons"></g>
     <rect
        ry="1.4999999"
        style="fill:#b9fffb;fill-opacity:0.784314;stroke:#000000;stroke-width:8.17557;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
@@ -3021,6 +3007,7 @@
     root.querySelectorAll('#sp-gen-switch button').forEach(function(b){ b.classList.toggle('active', Number(b.getAttribute('data-gen')) === sp.gen); });
     root.querySelectorAll('#sp-time-switch button').forEach(function(b){ b.classList.toggle('active', Number(b.getAttribute('data-t')) === sp.time); });
     root.querySelectorAll('#sp-dark-switch button').forEach(function(b){ b.classList.toggle('active', (b.getAttribute('data-dark') === 'on') === sp.darkOn); });
+    scatterPhotons();
     var beam = $('sp-laser-beam');
     if (beam) beam.setAttribute('class', sp.gen === 0 ? 'off' : sp.gen <= 0.001 ? 'glow-1' : sp.gen <= 0.01 ? 'glow-2' : 'glow-3');
     $('sp-eff-val').textContent = sp.eff.toFixed(1);
@@ -3044,6 +3031,32 @@
     if (v + o > 100) o = 100 - v;
     sp[which] = v / 100; sp[other] = o / 100;
     settingsChanged();
+  }
+
+  // ---------------- figure: down-converted photons ----------------
+  // The figure's photon paths (in its layer coordinates): crystal -> each
+  // beam splitter (continuing to the far detector), and each splitter's
+  // reflected leg to the near detector. Instead of a dashed line, each is
+  // drawn as randomly placed dots -- more of them the higher gen is, and
+  // none at gen = 0 -- re-scattered on every change and every collection.
+  var PHOTON_PATHS = [
+    [460, 782.36, 685, 652.36], [642.68, 675.04, 600.43, 607.16],
+    [460, 782.36, 685, 912.36], [640, 887.36, 600, 956.59]
+  ];
+  var DOTS_PER_UNIT = { 0:0, 0.001:0.03, 0.01:0.08, 0.1:0.2 };
+  function scatterPhotons(){
+    var g = $('sp-photons');
+    if (!g) return;
+    var density = DOTS_PER_UNIT[sp.gen] || 0, html = '';
+    PHOTON_PATHS.forEach(function(seg){
+      var dx = seg[2] - seg[0], dy = seg[3] - seg[1], len = Math.sqrt(dx*dx + dy*dy);
+      var nx = -dy / len, ny = dx / len, n = poisson(density * len);
+      for (var i = 0; i < n; i++){
+        var t = Math.random(), off = (Math.random() - 0.5) * 3, r = 1.5 + Math.random() * 1.3;
+        html += '<circle cx="' + (seg[0] + dx*t + nx*off).toFixed(1) + '" cy="' + (seg[1] + dy*t + ny*off).toFixed(1) + '" r="' + r.toFixed(2) + '"></circle>';
+      }
+    });
+    g.innerHTML = html;
   }
 
   // ---------------- results ----------------
@@ -3154,6 +3167,7 @@
   }
   function runOnce(){
     data = sampleWindow();
+    scatterPhotons();
     renderResults(sp.time >= 1);
     status((auto ? 'Auto — ' : '') + windowLabel() + ' of data (' + fmtCount(pulses()) + ' pulses) collected at ' + new Date().toLocaleTimeString() + '.');
   }
