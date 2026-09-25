@@ -147,7 +147,8 @@
   .photon-dot::before{ content:''; position:absolute; inset:0; border-radius:50%; background:var(--bad);
     box-shadow:0 0 11px 3px rgba(178,59,59,0.55); }
   .photon-dot.collapsed::before{ display:none; }
-  .photon-glyph{ display:none; position:absolute; left:50%; top:50%; margin:-32px 0 0 -32px; overflow:visible;
+  /* .photon-dot prefix: must outrank the generic '.diagram-inner svg { display:block }' */
+  .photon-dot .photon-glyph{ display:none; position:absolute; left:50%; top:50%; margin:-32px 0 0 -32px; overflow:visible;
     filter: drop-shadow(0 0 3px rgba(178,59,59,0.6)); }
   .photon-dot.collapsed .photon-glyph{ display:block; }
   .photon-glyph .g-line{ stroke:var(--bad); stroke-width:3; stroke-linecap:round; fill:none; }
