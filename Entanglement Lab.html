@@ -114,7 +114,7 @@
   /* ---- diagram ---- */
   .diagram-wrap{ position:relative; width:100%; overflow-x:auto; overflow-y:visible; background:#f6f4ee; border:1px solid var(--line); border-radius:8px; padding:14px 0; }
   :root[data-theme="dark"] .diagram-wrap{ background:#20221f; }
-  .diagram-inner{ position:relative; width:900px; height:410px; margin:0 auto; }
+  .diagram-inner{ position:relative; width:900px; height:246px; margin:0 auto; }
   .diagram-inner svg{ display:block; }
 
   .beam-line{ stroke: var(--line); stroke-width: 2.5; stroke-dasharray: 1 7; stroke-linecap:round; }
@@ -155,16 +155,19 @@
   .photon-glyph .g-hand{ stroke:var(--bad); stroke-width:3; stroke-linecap:round; fill:none; }
   .photon-glyph .g-head{ fill:var(--bad); }
   .arrowhead-red{ fill: var(--bad); }
-  .source-state-label{ font: 700 21px var(--serif); font-style:italic; fill:#ffffff; text-anchor:middle; dominant-baseline:central; }
+  .source-state-label{ font: 400 25px KaTeX_Main, "Times New Roman", serif; fill:#ffffff; text-anchor:middle; dominant-baseline:central; }
+  .source-state-label .sup{ font-size:16px; }
+  .source-state-label.mixed{ font-size:17px; }
+  .source-state-label.mixed .or{ font: 700 9px var(--sans); }
 
   .pulse-dot{ position:absolute; width:11px; height:11px; border-radius:50%; background: var(--good);
     box-shadow: 0 0 9px 3px rgba(47,143,91,0.6); opacity:0; pointer-events:none; transform:translate(-50%,-50%); z-index:3; }
 
   /* ---- controls ---- */
-  .control-row{ display:flex; gap:16px; flex-wrap:wrap; margin-top:18px; }
+  .control-row{ display:flex; gap:16px; flex-wrap:wrap; margin-top:14px; }
   .polarizer-control{ flex:1 1 260px; border:1px solid var(--line); border-radius:8px; padding:14px 14px 16px; background:#fdfcfa; }
   :root[data-theme="dark"] .polarizer-control{ background:#2a2825; }
-  .polarizer-control h3{ font-family:var(--display); font-size:19px; margin:0 0 3px; letter-spacing:.01em; }
+  .polarizer-control h3{ font-family:var(--display); font-size:19px; margin:0 0 9px; letter-spacing:.01em; }
   .polarizer-control .cur{ font:700 12px var(--sans); color:var(--crimson); margin-bottom:10px; }
   .quick-row{ display:grid; grid-template-columns:repeat(3,1fr); gap:6px; }
   .quick-row.two-col{ grid-template-columns:repeat(2,1fr); }
@@ -174,12 +177,17 @@
   .quick-btn:hover{ background: var(--crimson-tint); }
   .quick-btn.active,
   :root[data-theme="dark"] .quick-btn.active{ background: var(--crimson); border-color: var(--crimson); color:#fff; }
-  .quick-btn.source-btn{ font-family:var(--serif); font-style:italic; font-size:13px; }
+  .quick-btn.source-btn{ font-family:var(--serif); font-size:14px; }
+  .source-row{ display:flex; flex-wrap:wrap; gap:6px; }
+  .source-row .quick-btn{ flex:1 1 150px; padding:8px 6px; white-space:nowrap; }
+  .source-row .quick-btn.wide{ flex:1.7 1 250px; }
+  .source-row .plain{ font:600 11.5px var(--sans); }
+  .source-row .katex{ font-size:1em; }
 
-  .angle-row{ display:flex; flex-direction:column; gap:7px; margin-top:12px; }
-  .angle-row input[type="range"]{ width:100%; accent-color: var(--crimson); }
-  .angle-num{ display:flex; align-items:center; justify-content:center; gap:3px; font:700 12.5px var(--sans); }
-  .angle-num-label{ font: 700 11px var(--sans); color: var(--ink-soft); margin-right:1px; }
+  .angle-row{ display:flex; align-items:center; gap:10px; margin-top:10px; }
+  .angle-row input[type="range"]{ flex:1 1 auto; min-width:0; accent-color: var(--crimson); }
+  .angle-num{ display:flex; align-items:center; gap:3px; font:700 12.5px var(--sans); flex-shrink:0; }
+  .angle-num-label{ font: 700 11px var(--sans); color: var(--ink-soft); white-space:nowrap; }
   .angle-num input[type="number"]{ width:56px; font:700 12.5px var(--sans); padding:4px 4px; border:1.5px solid var(--line);
     border-radius:6px; text-align:right; background:var(--paper); color:var(--ink); }
   .beam-controls{ display:flex; align-items:center; justify-content:space-between; gap:14px; flex-wrap:wrap;
@@ -242,13 +250,13 @@
   #domain-braket .bk-node{ flex:0 0 140px; width:140px; display:flex; flex-direction:column; align-items:center; position:relative; z-index:2; }
   #domain-braket .bk-node-title{ font:700 12px var(--sans); color:var(--ink-soft); text-transform:uppercase; letter-spacing:.03em; margin-bottom:9px; height:14px; white-space:nowrap; }
   #domain-braket .bk-box{ width:84px; height:84px; border-radius:13px; display:flex; align-items:center; justify-content:center; font-size:19px; position:relative; }
-  #domain-braket .bk-box.source-box{ background:#fff; border:2px solid var(--wave-top); color:var(--wave-top); }
+  #domain-braket .bk-box.source-box{ background:var(--wave-top); border:1.5px solid var(--wave-top-dark); color:#fff; }
   #domain-braket .bk-box.source-box::before,
   #domain-braket .bk-box.source-box::after{ content:''; position:absolute; top:50%; width:0; height:0; transform:translateY(-50%);
     border-top:15px solid transparent; border-bottom:15px solid transparent; }
   /* horns flare outward from the box, like the Polarization source */
-  #domain-braket .bk-box.source-box::before{ left:-24px; border-left:22px solid var(--wave-top); }
-  #domain-braket .bk-box.source-box::after{ right:-24px; border-right:22px solid var(--wave-top); }
+  #domain-braket .bk-box.source-box::before{ left:-23.5px; border-left:22px solid var(--wave-top); }
+  #domain-braket .bk-box.source-box::after{ right:-23.5px; border-right:22px solid var(--wave-top); }
   #domain-braket .bk-box.projector-box{ background:var(--element-fill); border:1.5px solid var(--element-stroke); color:#fff; }
   #domain-braket .bk-box.gate-box{ background:#cfe9f7; border:1.5px solid #7fb3d0; color:#20475c; font-size:26px; font-weight:700; }
   #domain-braket .bk-box.measurement-box{ background:#2b2f36; border:1.5px solid #14161a; flex-direction:column; gap:1px; }
@@ -332,6 +340,10 @@
   #domain-braket .bk-quick-row .quick-btn{ font:700 10.5px var(--sans); padding:5px 3px; width:100%; }
   #domain-braket .bk-quick-row .quick-btn.source-btn{ font-size:12px; }
   #domain-braket .bk-quick-row .quick-btn.wide{ grid-column:1/-1; }
+  #domain-braket .bk-quick-row.three{ grid-template-columns:repeat(3,1fr); }
+  #domain-braket .bk-quick-row.fracs{ margin-top:5px; }
+  #domain-braket .bk-quick-row.fracs .quick-btn{ padding:2px 2px; font-size:9.5px; }
+  #domain-braket .bk-plus-gap{ display:flex; justify-content:center; padding-top:40px; }
   #domain-braket .source-formula{ margin-top:9px; text-align:center; font-size:11px; color:var(--ink-soft); }
   #domain-braket .insert-btn{ width:28px; height:28px; border-radius:50%; border:1.5px solid var(--ink-soft); background:#fff; color:var(--ink-soft);
     font:700 15px var(--sans); line-height:1; cursor:pointer; display:flex; align-items:center; justify-content:center; padding:0; }
@@ -340,8 +352,9 @@
   #domain-braket .insert-btn:disabled{ opacity:.35; cursor:not-allowed; }
 
   /* ---- run controls / results ---- */
-  #domain-braket .bk-counts{ font-size:13px; color:var(--ink-soft); margin-top:6px; }
-  #domain-braket .bk-counts b{ color:var(--ink); }
+  #domain-braket .beam-controls{ align-items:flex-start; }
+  #domain-braket .beam-controls > .btn-row:first-child{ flex:1 1 560px; }
+  #domain-braket .bk-status{ flex-basis:100%; order:3; font-size:13px; color:var(--ink-soft); min-height:1.3em; margin-top:-4px; }
   #domain-braket .bk-results{ display:grid; grid-template-columns:auto 1fr; gap:16px; margin-top:16px; align-items:start; }
   @media (max-width:760px){ #domain-braket .bk-results{ grid-template-columns:1fr; } }
   #domain-braket .bk-results .stats-grid{ margin-top:0; }
@@ -397,7 +410,7 @@
 
       <div class="diagram-wrap">
         <div class="diagram-inner" id="diagram-inner">
-          <svg id="diagram-svg" viewBox="0 0 900 410" width="900" height="410" xmlns="http://www.w3.org/2000/svg">
+          <svg id="diagram-svg" viewBox="0 62 900 246" width="900" height="246" xmlns="http://www.w3.org/2000/svg">
             <defs>
               <marker id="arrow-w" markerWidth="5" markerHeight="5" refX="2.5" refY="2.5" orient="auto-start-reverse">
                 <path d="M0,0 L5,2.5 L0,5 Z" fill="#ffffff"></path>
@@ -414,8 +427,8 @@
             <line class="beam-line" x1="654" y1="150" x2="764" y2="150"></line>
 
             <!-- coincidence wires: out the back, down, across, down into the node -->
-            <path class="coinc-line" d="M 84 150 L 40 150 L 40 250 L 450 250 L 450 306"></path>
-            <path class="coinc-line" d="M 816 150 L 860 150 L 860 250 L 450 250 L 450 306"></path>
+            <path class="coinc-line" d="M 84 150 L 40 150 L 40 250 L 450 250"></path>
+            <path class="coinc-line" d="M 816 150 L 860 150 L 860 250 L 450 250"></path>
 
             <!-- source: blue square with two emission "horns", like the SG oven -->
             <g>
@@ -423,7 +436,7 @@
               <polygon class="source-horn" points="416,150 398,138 398,162"></polygon>
               <polygon class="source-horn" points="484,150 502,138 502,162"></polygon>
               <rect class="source-box" x="416" y="116" width="68" height="68" rx="6"></rect>
-              <text id="source-state-label" class="source-state-label" x="450" y="150">&#936;&#8315;</text>
+              <text id="source-state-label" class="source-state-label" x="450" y="150"></text>
             </g>
 
             <!-- Alice polarizer -->
@@ -468,10 +481,10 @@
 
             <!-- coincidence node, with a hand-drawn, perfectly centered cross -->
             <g>
-              <circle id="coinc-node" class="coinc-node" cx="450" cy="330" r="24"></circle>
-              <line class="coinc-cross" x1="441" y1="321" x2="459" y2="339"></line>
-              <line class="coinc-cross" x1="459" y1="321" x2="441" y2="339"></line>
-              <text class="live-count" x="450" y="378">Coincidences: <tspan class="n" id="coinc-n">0</tspan></text>
+              <circle id="coinc-node" class="coinc-node" cx="450" cy="250" r="24"></circle>
+              <line class="coinc-cross" x1="441" y1="241" x2="459" y2="259"></line>
+              <line class="coinc-cross" x1="459" y1="241" x2="441" y2="259"></line>
+              <text class="live-count" x="450" y="296">Coincidences: <tspan class="n" id="coinc-n">0</tspan></text>
             </g>
 
           </svg>
@@ -486,12 +499,12 @@
       <div class="control-row">
         <div class="polarizer-control" style="flex-basis:100%;">
           <h3>Entangled Source</h3>
-          <div class="quick-row two-col" id="source-buttons">
-            <button class="quick-btn source-btn active" data-bell="psi_minus">&#936;&#8315; = &#8594;&#8593;&#8722;&#8593;&#8594;</button>
-            <button class="quick-btn source-btn" data-bell="psi_plus">&#936;&#8314; = &#8594;&#8593;+&#8593;&#8594;</button>
-            <button class="quick-btn source-btn" data-bell="phi_minus">&#934;&#8315; = &#8594;&#8594;&#8722;&#8593;&#8593;</button>
-            <button class="quick-btn source-btn" data-bell="phi_plus">&#934;&#8314; = &#8594;&#8594;+&#8593;&#8593;</button>
-            <button class="quick-btn source-btn" data-bell="mixed" style="grid-column:1/-1;">&#961; = &#8594;&#8594;&#8202;<span style="font-style:normal;">&#8201;OR&#8201;</span>&#8202;&#8593;&#8593; &nbsp;(mixed, not entangled)</button>
+          <div class="source-row" id="source-buttons">
+            <button class="quick-btn source-btn active" data-bell="psi_minus"><span class="tex" data-tex="\Psi^{-} = \rightarrow\uparrow - \uparrow\rightarrow"></span></button>
+            <button class="quick-btn source-btn" data-bell="psi_plus"><span class="tex" data-tex="\Psi^{+} = \rightarrow\uparrow + \uparrow\rightarrow"></span></button>
+            <button class="quick-btn source-btn" data-bell="phi_minus"><span class="tex" data-tex="\Phi^{-} = \rightarrow\rightarrow - \uparrow\uparrow"></span></button>
+            <button class="quick-btn source-btn" data-bell="phi_plus"><span class="tex" data-tex="\Phi^{+} = \rightarrow\rightarrow + \uparrow\uparrow"></span></button>
+            <button class="quick-btn source-btn wide" data-bell="mixed"><span class="tex" data-tex="\rightarrow\rightarrow\ \textrm{OR}\ \uparrow\uparrow"></span> <span class="plain">(classical correlations)</span></button>
           </div>
         </div>
       </div>
@@ -499,7 +512,6 @@
       <div class="control-row">
         <div class="polarizer-control">
           <h3>Alice&#8217;s Polarizer</h3>
-          <div class="cur" id="alice-cur-label">Currently: H (0&#176;)</div>
           <div class="quick-row" id="alice-buttons">
             <button class="quick-btn active" data-side="alice" data-key="H">H (0&#176;)</button>
             <button class="quick-btn" data-side="alice" data-key="V">V (90&#176;)</button>
@@ -509,17 +521,16 @@
             <button class="quick-btn" data-side="alice" data-key="L">Left</button>
           </div>
           <div class="angle-row">
-            <input type="range" min="-90" max="90" step="1" value="0" class="angle-slider" data-pside="alice" aria-label="Linear polarizer angle">
+            <span class="angle-num-label">Custom Linear:</span>
+            <input type="range" min="-90" max="90" step="1" value="0" class="angle-slider" data-pside="alice" aria-label="Custom linear polarizer angle">
             <div class="angle-num">
-              <span class="angle-num-label">Linear:</span>
-              <input type="number" min="-90" max="90" step="1" value="0" class="angle-number" data-pside="alice">
+              <input type="number" min="-90" max="90" step="1" value="0" class="angle-number" data-pside="alice" aria-label="Custom linear polarizer angle (degrees)">
               <span>&deg;</span>
             </div>
           </div>
         </div>
         <div class="polarizer-control">
           <h3>Bob&#8217;s Polarizer</h3>
-          <div class="cur" id="bob-cur-label">Currently: H (0&#176;)</div>
           <div class="quick-row" id="bob-buttons">
             <button class="quick-btn active" data-side="bob" data-key="H">H (0&#176;)</button>
             <button class="quick-btn" data-side="bob" data-key="V">V (90&#176;)</button>
@@ -529,10 +540,10 @@
             <button class="quick-btn" data-side="bob" data-key="L">Left</button>
           </div>
           <div class="angle-row">
-            <input type="range" min="-90" max="90" step="1" value="0" class="angle-slider" data-pside="bob" aria-label="Linear polarizer angle">
+            <span class="angle-num-label">Custom Linear:</span>
+            <input type="range" min="-90" max="90" step="1" value="0" class="angle-slider" data-pside="bob" aria-label="Custom linear polarizer angle">
             <div class="angle-num">
-              <span class="angle-num-label">Linear:</span>
-              <input type="number" min="-90" max="90" step="1" value="0" class="angle-number" data-pside="bob">
+              <input type="number" min="-90" max="90" step="1" value="0" class="angle-number" data-pside="bob" aria-label="Custom linear polarizer angle (degrees)">
               <span>&deg;</span>
             </div>
           </div>
@@ -625,10 +636,12 @@
           <button class="btn primary" id="bk-send-1">Run 1 Shot</button>
           <button class="btn" id="bk-send-5">Run 5 Shots</button>
           <button class="btn" id="bk-send-1000">Run 1000 Shots</button>
+          <button class="btn" id="bk-stream">&#9654; Stream</button>
           <button class="btn" id="bk-show-prob">Show Probabilities</button>
           <button class="btn" id="bk-clear">Clear Counts</button>
           <button class="btn" id="bk-reset">Reset</button>
         </div>
+        <div class="bk-status" id="bk-status"></div>
         <div class="btn-row">
           <span class="speed-label">Speed</span>
           <div class="mode-switch small" id="bk-speed-switch">
@@ -638,9 +651,6 @@
           </div>
         </div>
       </div>
-      <div class="bk-counts" id="bk-counts"></div>
-      <div class="status" id="bk-status" style="margin-top:4px; font-size:13px; color:var(--ink-soft);"></div>
-
       <div class="bk-results">
         <div class="bk-joint">
           <div class="bk-joint-title" id="bk-joint-title">Joint Outcomes (Both Measured)</div>
@@ -649,7 +659,6 @@
             <tr><th class="row-h">Alice 0</th><td class="bk-jcell agree" id="bk-j-00">0</td><td class="bk-jcell" id="bk-j-01">0</td></tr>
             <tr><th class="row-h">Alice 1</th><td class="bk-jcell" id="bk-j-10">0</td><td class="bk-jcell agree" id="bk-j-11">0</td></tr>
           </table>
-          <div class="bk-joint-note">Shaded cells: Alice and Bob got the same bit.</div>
         </div>
         <div class="stats-grid">
           <div class="stat-box"><div class="num" id="bk-stat-sent">0</div><div class="lbl">Pairs Sent</div></div>
@@ -671,7 +680,7 @@
             Alice&#8217;s own 0/1 statistics (counting every pair, whatever happens to Bob&#8217;s qubit) never depend on Bob&#8217;s choices &#8212; try it.
             <br><b>CHSH:</b> with W = (Z+X)/&#8730;2 and V = (Z&#8722;X)/&#8730;2, record E for Alice &#8712; {Z, X} and Bob &#8712; {W, V}.
             Any local hidden-variable story obeys |E(Z,W) + E(Z,V) + E(X,W) &#8722; E(X,V)| &#8804; 2; the state |&#934;<sup>+</sup>&#10217; reaches 2&#8730;2 &#8776; 2.83,
-            while the mixed state &#961;<sub>mix</sub> stays at &#8730;2 &#8776; 1.41.
+            while the classically correlated &#961;<sub>corr</sub> stays at &#8730;2 &#8776; 1.41.
           </div>
         </div>
       </details>
@@ -753,18 +762,17 @@
   }
 
   var BELL_STATES = {
-    psi_minus: { label:'\u03A8\u207B = \u2192\u2191\u2212\u2191\u2192', amps:{ HH:cx(0,0), HV:cx(S,0),  VH:cx(-S,0), VV:cx(0,0) } },
-    psi_plus:  { label:'\u03A8\u207A = \u2192\u2191+\u2191\u2192',      amps:{ HH:cx(0,0), HV:cx(S,0),  VH:cx(S,0),  VV:cx(0,0) } },
-    phi_minus: { label:'\u03A6\u207B = \u2192\u2192\u2212\u2191\u2191', amps:{ HH:cx(S,0), HV:cx(0,0),  VH:cx(0,0),  VV:cx(-S,0) } },
-    phi_plus:  { label:'\u03A6\u207A = \u2192\u2192+\u2191\u2191',      amps:{ HH:cx(S,0), HV:cx(0,0),  VH:cx(0,0),  VV:cx(S,0) } }
+    psi_minus: { tex:'\\Psi^{-} = \\rightarrow\\uparrow - \\uparrow\\rightarrow', amps:{ HH:cx(0,0), HV:cx(S,0),  VH:cx(-S,0), VV:cx(0,0) } },
+    psi_plus:  { tex:'\\Psi^{+} = \\rightarrow\\uparrow + \\uparrow\\rightarrow', amps:{ HH:cx(0,0), HV:cx(S,0),  VH:cx(S,0),  VV:cx(0,0) } },
+    phi_minus: { tex:'\\Phi^{-} = \\rightarrow\\rightarrow - \\uparrow\\uparrow', amps:{ HH:cx(S,0), HV:cx(0,0),  VH:cx(0,0),  VV:cx(-S,0) } },
+    phi_plus:  { tex:'\\Phi^{+} = \\rightarrow\\rightarrow + \\uparrow\\uparrow', amps:{ HH:cx(S,0), HV:cx(0,0),  VH:cx(0,0),  VV:cx(S,0) } }
   };
   // Not a Bell state: a classical 50/50 mixture of HH and VV pairs (the
   // density matrix |00><00| + |11><11|, normalized) -- perfectly
   // correlated in H/V, but uncorrelated at +/-45 degrees.
-  BELL_STATES.mixed = { label:'\u03C1 = \u2192\u2192 OR \u2191\u2191 (50/50 mixture)',
+  BELL_STATES.mixed = { tex:'\\rightarrow\\rightarrow\\ \\textrm{OR}\\ \\uparrow\\uparrow\\quad\\textrm{(classical correlations)}',
     mixture:[ { w:0.5, amps:{ HH:cx(1,0), HV:cx(0,0), VH:cx(0,0), VV:cx(0,0) } },
               { w:0.5, amps:{ HH:cx(0,0), HV:cx(0,0), VH:cx(0,0), VV:cx(1,0) } } ] };
-  var SOURCE_SYMBOL = { psi_minus:'\u03A8\u207B', psi_plus:'\u03A8\u207A', phi_minus:'\u03A6\u207B', phi_plus:'\u03A6\u207A', mixed:'\u03C1' };
 
   var bellKey = 'psi_minus';
 
@@ -838,8 +846,6 @@
     dotBob: document.getElementById('dot-bob'),
     pulseAlice: document.getElementById('pulse-alice'),
     pulseBob: document.getElementById('pulse-bob'),
-    aliceCurLabel: document.getElementById('alice-cur-label'),
-    bobCurLabel: document.getElementById('bob-cur-label'),
     sourceStateLabel: document.getElementById('source-state-label'),
     statusLine: document.getElementById('status-line'),
     playBtn: document.getElementById('btn-play'),
@@ -853,7 +859,13 @@
     SRC: {x:450, y:150}, AP:{x:280,y:150}, AD:{x:110,y:150},
     BP: {x:620, y:150}, BD:{x:790,y:150},
     A_BACK: {x:84,y:150}, B_BACK: {x:816,y:150}, A_OUT: {x:40,y:150}, B_OUT: {x:860,y:150},
-    CORNER_Y: 250, COIN_TOP: {x:450,y:306}
+    CORNER_Y: 250, COIN: {x:450,y:250}, VIEW_Y: 62,
+    // just beyond the source horns / polarizer faces / detector faces;
+    // 36px = half the photon arrow (27px line + arrowhead) plus a gap
+    SRC_A_OUT: {x:388,y:150}, SRC_B_OUT: {x:512,y:150},
+    AP_IN: {x:325,y:150}, BP_IN: {x:575,y:150},
+    AP_OUT: {x:246-36,y:150}, BP_OUT: {x:654+36,y:150},
+    AD_IN: {x:110+36,y:150}, BD_IN: {x:790-36,y:150}
   };
 
   // "sync icon" style circular-polarization glyph: two fixed 140-degree arcs
@@ -885,7 +897,6 @@
     var arc2 = (side === 'alice') ? els.aliceHandL : els.bobHandL;
     var head2 = (side === 'alice') ? els.aliceArrowL : els.bobArrowL;
     var symEl = (side === 'alice') ? els.aliceSymbol : els.bobSymbol;
-    var curLabel = (side === 'alice') ? els.aliceCurLabel : els.bobCurLabel;
 
     if (p.type === 'linear') {
       var rad = p.angle * Math.PI/180;
@@ -914,7 +925,6 @@
       head1.style.display = ''; head2.style.display = '';
       symEl.textContent = p.hand;
     }
-    curLabel.textContent = 'Currently: ' + p.symbol;
   }
 
   function setSide(side, key, angle){
@@ -942,14 +952,39 @@
     });
   });
 
+  function renderTex(el, tex){
+    try { katex.render(tex, el, { throwOnError:false }); } catch (e) { el.textContent = tex; }
+  }
+  // The label sits inside an SVG, so it can't be KaTeX -- it borrows
+  // KaTeX's own font instead, with a real raised superscript.
+  var SVG_NS = 'http://www.w3.org/2000/svg';
+  function tspan(text, attrs){
+    var t = document.createElementNS(SVG_NS, 'tspan');
+    for (var k in attrs) t.setAttribute(k, attrs[k]);
+    t.textContent = text;
+    return t;
+  }
+  function setSourceLabel(key){
+    var el = els.sourceStateLabel;
+    while (el.firstChild) el.removeChild(el.firstChild);
+    el.classList.toggle('mixed', key === 'mixed');
+    if (key === 'mixed') {
+      el.appendChild(tspan('\u2192\u2192', { x:450, dy:'-17' }));
+      el.appendChild(tspan('or', { x:450, dy:'17', 'class':'or' }));
+      el.appendChild(tspan('\u2191\u2191', { x:450, dy:'17' }));
+      return;
+    }
+    el.appendChild(tspan(key.indexOf('psi') === 0 ? '\u03A8' : '\u03A6', {}));
+    el.appendChild(tspan(key.slice(-5) === 'minus' ? '\u2212' : '+', { 'class':'sup', dy:'-0.55em' }));
+  }
+
   function setBellState(key){
     bellKey = key;
     document.querySelectorAll('.quick-btn[data-bell]').forEach(function(b){
       b.classList.toggle('active', b.getAttribute('data-bell') === key);
     });
-    els.sourceStateLabel.textContent = SOURCE_SYMBOL[key];
-    var formulaEl = document.getElementById('state-formula-display');
-    formulaEl.textContent = BELL_STATES[key].label;
+    setSourceLabel(key);
+    renderTex(document.getElementById('state-formula-display'), BELL_STATES[key].tex);
     refreshMathTrace();
     resetCounts();
   }
@@ -1039,7 +1074,7 @@
   }
 
   // ---------------- animation helpers ----------------
-  function showEl(el, x, y){ el.style.left = x + 'px'; el.style.top = y + 'px'; el.style.opacity = '1'; }
+  function showEl(el, x, y){ el.style.left = x + 'px'; el.style.top = (y - POS.VIEW_Y) + 'px'; el.style.opacity = '1'; }
   function hideEl(el){ el.style.opacity = '0'; }
 
   function animateEl(el, from, to, duration){
@@ -1050,7 +1085,7 @@
         if (!start) start = ts;
         var t = Math.min(1, (ts - start) / duration);
         el.style.left = (from.x + (to.x - from.x) * t) + 'px';
-        el.style.top = (from.y + (to.y - from.y) * t) + 'px';
+        el.style.top = (from.y + (to.y - from.y) * t - POS.VIEW_Y) + 'px';
         if (t < 1) requestAnimationFrame(step); else resolve();
       }
       requestAnimationFrame(step);
@@ -1077,7 +1112,7 @@
         var localT = segLen > 0 ? (distTarget - acc)/segLen : 1;
         var p0 = points[idx], p1 = points[idx+1] || points[idx];
         el.style.left = (p0.x + (p1.x - p0.x)*localT) + 'px';
-        el.style.top = (p0.y + (p1.y - p0.y)*localT) + 'px';
+        el.style.top = (p0.y + (p1.y - p0.y)*localT - POS.VIEW_Y) + 'px';
         if (t < 1) requestAnimationFrame(step); else resolve();
       }
       requestAnimationFrame(step);
@@ -1141,16 +1176,20 @@
     setDotUnknown(els.dotAlice); setDotUnknown(els.dotBob);
     els.statusLine.textContent = 'Pair emitted \u2014 traveling to the analyzers\u2026';
 
+    // Unpolarized dot: from just outside the source to the polarizer's
+    // near face, where it disappears into the polarizer.
     return Promise.all([
-      animateEl(els.dotAlice, POS.SRC, POS.AP, dur),
-      animateEl(els.dotBob, POS.SRC, POS.BP, dur)
+      animateEl(els.dotAlice, POS.SRC_A_OUT, POS.AP_IN, dur),
+      animateEl(els.dotBob, POS.SRC_B_OUT, POS.BP_IN, dur)
     ]).then(function(){
+      hideEl(els.dotAlice); hideEl(els.dotBob);
       var aPass = o.a === 'pass', bPass = o.b === 'pass';
       if (aPass) collapseDot(els.dotAlice, analyzer('alice')); else flashClass(els.aliceRect, 'absorb-flash', dur);
       if (bPass) collapseDot(els.dotBob, analyzer('bob')); else flashClass(els.bobRect, 'absorb-flash', dur);
       var legs = [];
-      if (aPass) legs.push(animateEl(els.dotAlice, POS.AP, POS.AD, dur)); else { hideEl(els.dotAlice); legs.push(new Promise(function(r){ setTimeout(r, dur); })); }
-      if (bPass) legs.push(animateEl(els.dotBob, POS.BP, POS.BD, dur)); else { hideEl(els.dotBob); legs.push(new Promise(function(r){ setTimeout(r, dur); })); }
+      // The polarized arrow only emerges beyond the polarizer.
+      if (aPass) legs.push(animateEl(els.dotAlice, POS.AP_OUT, POS.AD_IN, dur)); else legs.push(new Promise(function(r){ setTimeout(r, dur); }));
+      if (bPass) legs.push(animateEl(els.dotBob, POS.BP_OUT, POS.BD_IN, dur)); else legs.push(new Promise(function(r){ setTimeout(r, dur); }));
       return Promise.all(legs).then(function(){ return { aPass:aPass, bPass:bPass }; });
     }).then(function(r){
       hideEl(els.dotAlice); hideEl(els.dotBob);
@@ -1160,8 +1199,8 @@
       if (r.aPass && r.bPass){
         els.statusLine.textContent = 'Both detectors fired \u2014 coincidence!';
         return Promise.all([
-          animateAlongPath(els.pulseAlice, [POS.A_BACK, POS.A_OUT, {x:POS.A_OUT.x,y:POS.CORNER_Y}, {x:450,y:POS.CORNER_Y}, POS.COIN_TOP], dur*1.4),
-          animateAlongPath(els.pulseBob, [POS.B_BACK, POS.B_OUT, {x:POS.B_OUT.x,y:POS.CORNER_Y}, {x:450,y:POS.CORNER_Y}, POS.COIN_TOP], dur*1.4)
+          animateAlongPath(els.pulseAlice, [POS.A_BACK, POS.A_OUT, {x:POS.A_OUT.x,y:POS.CORNER_Y}, POS.COIN], dur*1.4),
+          animateAlongPath(els.pulseBob, [POS.B_BACK, POS.B_OUT, {x:POS.B_OUT.x,y:POS.CORNER_Y}, POS.COIN], dur*1.4)
         ]).then(function(){
           hideEl(els.pulseAlice); hideEl(els.pulseBob);
           flashClass(els.coincNode, 'flash', 400);
@@ -1214,6 +1253,8 @@
   });
 
   // ---------------- init ----------------
+  document.querySelectorAll('#source-buttons .tex').forEach(function(el){ renderTex(el, el.getAttribute('data-tex')); });
+  setBellState(bellKey);
   updatePolarizerVisual('alice');
   updatePolarizerVisual('bob');
   updateStatsDisplay();
@@ -1262,6 +1303,7 @@
   };
   var ORTH = { '0':'1', '1':'0', '+':'-', '-':'+', '+_i':'-_i', '-_i':'+_i' };
   var BASIS_KETS = { Z:['0','1'], X:['+','-'], Y:['+_i','-_i'], W:['w0','w1'], V:['v0','v1'] };
+  var BASIS_TEX = { Z:'Z', X:'X', Y:'Y', W:'\\dfrac{Z+X}{\\sqrt{2}}', V:'\\dfrac{Z-X}{\\sqrt{2}}' };
   var BASIS_NAME = { Z:'Z', X:'X', Y:'Y', W:'(Z+X)/\u221A2', V:'(Z\u2212X)/\u221A2' };
   var GATES = {
     Z:   [[C1, C0], [C0, cx(-1)]],
@@ -1293,7 +1335,7 @@
     phi_minus: { tex:'\\Phi^{-}', psi:[cx(S), C0, C0, cx(-S)] },
     phi_plus:  { tex:'\\Phi^{+}', psi:[cx(S), C0, C0, cx(S)] },
     // Classically correlated, not entangled: (|00><00| + |11><11|)/2.
-    mixed:     { tex:'\\rho_{\\text{mix}}', mixed:true }
+    mixed:     { tex:'\\rho_{\\text{corr}}', mixed:true }
   };
   var BELL_ORDER = ['psi_minus','psi_plus','phi_minus','phi_plus','mixed'];
   var PURE_BELL = ['psi_minus','psi_plus','phi_minus','phi_plus'];
@@ -1657,14 +1699,6 @@
     html += '<div class="bk-marker" id="bk-marker-A"></div><div class="bk-marker" id="bk-marker-B"></div>';
     diagram.innerHTML = html;
     renderKatexIn(diagram);
-    diagram.querySelectorAll('.measurement-basis-row button').forEach(function(btn){
-      btn.addEventListener('click', function(){
-        if (animBusy) return;
-        bases[btn.getAttribute('data-bk-side')] = btn.getAttribute('data-basis');
-        resetCountsOnly();
-        refreshAll();
-      });
-    });
   }
   function sourceNodeHtml(){
     return '<div class="bk-node" data-node="src">' +
@@ -1688,7 +1722,8 @@
     if (showProb){
       var p = sidePrefix(side, k);
       if (p.prob > 1e-9 && p.label){
-        inner = '<div class="bk-progress-marker"><div class="bk-progress-prob">' + pct(p.prob) + '</div>' +
+        var probHtml = p.prob < 1 - 1e-9 ? '<div class="bk-progress-prob">' + pct(p.prob) + '</div>' : '';
+        inner = '<div class="bk-progress-marker">' + probHtml +
           '<div class="bk-marker-static">' + katexSpan(p.label) + '</div></div>';
       }
     }
@@ -1712,10 +1747,6 @@
     return '<div>0 &ndash; ' + v0 + '</div><div>1 &ndash; ' + v1 + '</div>';
   }
   function measNodeHtml(side){
-    var basisBtn = function(b){
-      return '<button data-bk-side="' + side + '" data-basis="' + b + '" class="' + (bases[side] === b ? 'active' : '') + '">' + BASIS_NAME[b] + '</button>';
-    };
-    var basisBtns = ['Z','X','Y'].map(basisBtn).join('') + '</div><div class="measurement-basis-row">' + ['W','V'].map(basisBtn).join('');
     return '<div class="bk-node" data-node="' + side + '-meas">' +
       '<div class="bk-node-title">' + SIDE_NAME[side] + ' Measures</div>' +
       '<div class="measurement-row">' +
@@ -1723,31 +1754,43 @@
           dialSvg(side, needlePosClass(lastOutcome[side])) + '</div>' +
         '<div class="measurement-stats side-' + side + '" id="bk-meas-stats-' + side + '">' + measStatsHtml(side) + '</div>' +
       '</div>' +
-      '<div class="measurement-basis-row">' + basisBtns + '</div></div>';
+      '<div class="bk-node-sub"><span class="gate-name">Basis: ' + BASIS_NAME[bases[side]] + '</span></div></div>';
   }
 
   // ---------------- controls row ----------------
   function renderControlsRow(){
     var sp = '<div class="bk-spacer"></div>';
-    var html = plusColHtml('A') + sp;
+    var html = measCardHtml('A') + plusGapHtml('A');
     for (var i = chains.A.length - 1; i >= 0; i--) html += elementCardHtml('A', i) + sp;
     html += sourceCardHtml();
     for (var j = 0; j < chains.B.length; j++) html += sp + elementCardHtml('B', j);
-    html += sp + plusColHtml('B');
+    html += plusGapHtml('B') + measCardHtml('B');
     controlsRow.innerHTML = html;
     renderKatexIn(controlsRow);
     wireControls();
   }
-  function plusColHtml(side){
+  // The + sits in the gap between a side's measurement and its outermost
+  // element (or the source), which is where a new element gets inserted.
+  function plusGapHtml(side){
     var full = chains[side].length >= MAX_PER_SIDE;
-    return '<div class="bk-col"><button class="insert-btn" data-bk-add="' + side + '"' + (full ? ' disabled' : '') +
-      ' title="' + (full ? 'At most ' + MAX_PER_SIDE + ' elements per side' : 'Add an element to ' + SIDE_NAME[side] + '’s side') + '">+</button></div>';
+    return '<div class="bk-spacer bk-plus-gap"><button class="insert-btn" data-bk-add="' + side + '"' + (full ? ' disabled' : '') +
+      ' title="' + (full ? 'At most ' + MAX_PER_SIDE + ' elements per side' : 'Add a gate to ' + SIDE_NAME[side] + '\u2019s side') + '">+</button></div>';
+  }
+  function measCardHtml(side){
+    var btn = function(b){
+      return '<button class="quick-btn' + (bases[side] === b ? ' active' : '') + '" data-bk-side="' + side + '" data-basis="' + b + '" title="Measure in the ' + BASIS_NAME[b] + ' basis">' +
+        katexSpan(BASIS_TEX[b]) + '</button>';
+    };
+    return '<div class="bk-card"><div class="ec-head"><h3>Measurement</h3></div>' +
+      '<div class="ec-side">' + SIDE_NAME[side] + '\u2019s side</div>' +
+      '<div class="bk-quick-row three">' + ['Z','X','Y'].map(btn).join('') + '</div>' +
+      '<div class="bk-quick-row fracs">' + ['W','V'].map(btn).join('') + '</div></div>';
   }
   function sourceCardHtml(){
     var btns = BELL_ORDER.map(function(k){
-      var wide = BELL[k].mixed ? ' wide' : '', title = BELL[k].mixed ? ' title="Mixed state (not entangled)"' : '';
+      var wide = BELL[k].mixed ? ' wide' : '', title = BELL[k].mixed ? ' title="Classically correlated mixed state (not entangled)"' : '';
       return '<button class="quick-btn source-btn' + wide + (k === bellKey ? ' active' : '') + '" data-bk-bell="' + k + '"' + title + '>' +
-        katexSpan(sourceSymbolTex(k)) + (BELL[k].mixed ? ' <span style="font:700 10px var(--sans); font-style:normal;">(mixed)</span>' : '') + '</button>';
+        katexSpan(sourceSymbolTex(k)) + '</button>';
     }).join('');
     return '<div class="bk-card source-card"><div class="ec-head"><h3>Source</h3></div>' +
       '<div class="bk-quick-row">' + btns + '</div>' +
@@ -1773,45 +1816,62 @@
       '<div class="bk-quick-row">' + btns + '</div></div>';
   }
   function elOf(btn){ return chains[btn.getAttribute('data-bk-side')][Number(btn.getAttribute('data-bk-idx'))]; }
+  // Settings clicked while a shot is animating (e.g. during a stream) are
+  // applied the moment that shot finishes, rather than being ignored.
+  var idleQueue = [];
+  function whenIdle(fn){ if (!animBusy) fn(); else idleQueue.push(fn); }
+  function flushIdleQueue(){ var q = idleQueue; idleQueue = []; q.forEach(function(fn){ fn(); }); }
+
   function wireControls(){
     controlsRow.querySelectorAll('[data-bk-bell]').forEach(function(btn){
       btn.addEventListener('click', function(){
-        if (animBusy) return;
-        bellKey = btn.getAttribute('data-bk-bell');
-        rebuildEverything();
+        var k = btn.getAttribute('data-bk-bell');
+        whenIdle(function(){ bellKey = k; rebuildEverything(); });
+      });
+    });
+    controlsRow.querySelectorAll('[data-basis]').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var side = btn.getAttribute('data-bk-side'), b = btn.getAttribute('data-basis');
+        whenIdle(function(){ bases[side] = b; rebuildEverything(); });
       });
     });
     controlsRow.querySelectorAll('.quick-btn[data-bk-idx]').forEach(function(btn){
       btn.addEventListener('click', function(){
-        if (animBusy) return;
-        var el = elOf(btn);
-        if (btn.hasAttribute('data-sym')) el.sym = btn.getAttribute('data-sym');
-        else el.gateKind = btn.getAttribute('data-kind');
-        rebuildEverything();
+        var el = elOf(btn), sym = btn.getAttribute('data-sym'), kind = btn.getAttribute('data-kind');
+        whenIdle(function(){
+          if (sym) el.sym = sym; else el.gateKind = kind;
+          rebuildEverything();
+        });
       });
     });
     controlsRow.querySelectorAll('.pol-convert').forEach(function(btn){
       btn.addEventListener('click', function(){
-        if (animBusy) return;
         var el = elOf(btn);
-        if (el.type === 'projector'){ el.type = 'gate'; el.gateKind = 'Z'; delete el.sym; }
-        else { el.type = 'projector'; el.sym = '0'; delete el.gateKind; }
-        rebuildEverything();
+        whenIdle(function(){
+          if (el.type === 'projector'){ el.type = 'gate'; el.gateKind = 'Z'; delete el.sym; }
+          else { el.type = 'projector'; el.sym = '0'; delete el.gateKind; }
+          rebuildEverything();
+        });
       });
     });
     controlsRow.querySelectorAll('.pol-remove').forEach(function(btn){
       btn.addEventListener('click', function(){
-        if (animBusy) return;
-        chains[btn.getAttribute('data-bk-side')].splice(Number(btn.getAttribute('data-bk-idx')), 1);
-        rebuildEverything();
+        var side = btn.getAttribute('data-bk-side'), el = elOf(btn);
+        whenIdle(function(){
+          var i = chains[side].indexOf(el);
+          if (i >= 0) chains[side].splice(i, 1);
+          rebuildEverything();
+        });
       });
     });
     controlsRow.querySelectorAll('[data-bk-add]').forEach(function(btn){
       btn.addEventListener('click', function(){
         var side = btn.getAttribute('data-bk-add');
-        if (animBusy || chains[side].length >= MAX_PER_SIDE) return;
-        chains[side].push({ id: nextId++, type:'gate', gateKind:'I' });
-        rebuildEverything();
+        whenIdle(function(){
+          if (chains[side].length >= MAX_PER_SIDE) return;
+          chains[side].push({ id: nextId++, type:'gate', gateKind:'I' });
+          rebuildEverything();
+        });
       });
     });
   }
@@ -1819,8 +1879,6 @@
   // ---------------- results panel ----------------
   function fmtE(e){ return (e > 0 ? '+' : e < 0 ? '−' : '') + Math.abs(e).toFixed(2); }
   function updateStats(){
-    $('bk-counts').innerHTML = 'Sent: <b>' + counts.sent + '</b> &nbsp;|&nbsp; Both measured: <b>' + counts.both +
-      '</b> &nbsp;|&nbsp; Alice lost: <b>' + counts.lost.A + '</b> &nbsp;|&nbsp; Bob lost: <b>' + counts.lost.B + '</b>';
     var j, agree, disagree, corr = '—';
     if (showProb){
       j = exactStats().joint;
@@ -1985,7 +2043,7 @@
     }).then(function(){ m.style.opacity = '0'; });
   }
   function setRunControlsDisabled(dis){
-    ['bk-send-1','bk-send-5','bk-send-1000','bk-show-prob','bk-clear','bk-reset'].forEach(function(id){ $(id).disabled = dis; });
+    ['bk-send-1','bk-send-5','bk-send-1000'].forEach(function(id){ $(id).disabled = dis; });
   }
 
   function runOneShotAnimated(){
@@ -2052,7 +2110,8 @@
     }).then(function(){
       markers.A.style.opacity = '0'; markers.B.style.opacity = '0';
       animBusy = false;
-      setRunControlsDisabled(false);
+      setRunControlsDisabled(streaming);
+      flushIdleQueue();
     });
   }
 
@@ -2098,20 +2157,47 @@
   $('bk-send-1').addEventListener('click', function(){ runShots(1); });
   $('bk-send-5').addEventListener('click', function(){ runShots(5); });
   $('bk-send-1000').addEventListener('click', function(){ runShots(1000); });
-  $('bk-show-prob').addEventListener('click', function(){ if (!animBusy) setShowProb(!showProb); });
+  $('bk-show-prob').addEventListener('click', function(){
+    setStreaming(false);
+    whenIdle(function(){ setShowProb(!showProb); });
+  });
   $('bk-clear').addEventListener('click', function(){
-    if (animBusy) return;
-    resetCountsOnly();
-    if (showProb) setShowProb(false); else refreshAll();
+    whenIdle(function(){
+      resetCountsOnly();
+      if (showProb) setShowProb(false); else refreshAll();
+    });
   });
   $('bk-reset').addEventListener('click', function(){
-    if (animBusy) return;
-    defaultSetup();
-    showProb = false;
-    $('bk-show-prob').textContent = 'Show Probabilities';
-    $('bk-show-prob').classList.remove('toggle-on');
-    rebuildEverything();
+    setStreaming(false);
+    whenIdle(function(){
+      defaultSetup();
+      showProb = false;
+      $('bk-show-prob').textContent = 'Show Probabilities';
+      $('bk-show-prob').classList.remove('toggle-on');
+      rebuildEverything();
+    });
   });
+
+  // Stream: animated shots back to back until paused, like the
+  // Polarization tab (settings can still be changed between shots).
+  var streaming = false;
+  function setStreaming(on){
+    if (streaming === on) return;
+    streaming = on;
+    $('bk-stream').innerHTML = on ? '&#9208; Pause' : '&#9654; Stream';
+    $('bk-stream').classList.toggle('toggle-on', on);
+    if (on){
+      if (showProb) setShowProb(false);
+      setRunControlsDisabled(true);
+      streamLoop();
+    } else if (!animBusy) setRunControlsDisabled(false);
+  }
+  function streamLoop(){
+    if (!streaming) return;
+    if (animBusy){ setTimeout(streamLoop, 60); return; }
+    runOneShotAnimated().then(function(){ if (streaming) setTimeout(streamLoop, 90); });
+  }
+  $('bk-stream').addEventListener('click', function(){ setStreaming(!streaming); });
   root.querySelectorAll('#bk-speed-switch button').forEach(function(btn){
     btn.addEventListener('click', function(){
       speed = btn.getAttribute('data-speed');
