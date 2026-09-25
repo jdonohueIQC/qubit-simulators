@@ -142,15 +142,14 @@
   .coinc-node.flash{ fill: var(--good); filter: drop-shadow(0 0 6px var(--good)) drop-shadow(0 0 12px var(--good)); }
   .coinc-cross{ stroke:#ffffff; stroke-width:2.4; stroke-linecap:round; }
 
-  .photon-dot{ position:absolute; width:22px; height:22px; opacity:0; pointer-events:none; transform:translate(-50%,-50%);
-    z-index:3; display:flex; align-items:center; justify-content:center; }
-  .photon-dot::before{ content:''; position:absolute; inset:0; border-radius:50%; background:var(--bad);
-    box-shadow:0 0 11px 3px rgba(178,59,59,0.55); }
-  .photon-dot.collapsed::before{ display:none; }
-  /* .photon-dot prefix: must outrank the generic '.diagram-inner svg { display:block }' */
-  .photon-dot .photon-glyph{ display:none; position:absolute; left:50%; top:50%; margin:-32px 0 0 -32px; overflow:visible;
-    filter: drop-shadow(0 0 3px rgba(178,59,59,0.6)); }
-  .photon-dot.collapsed .photon-glyph{ display:block; }
+  /* Photons and coincidence pulses live inside the diagram SVG, drawn
+     after the beam lines and wires but BEFORE the source, polarizers,
+     detectors and coincidence node -- so they pass behind all of them. */
+  .photon-dot{ opacity:0; pointer-events:none; }
+  .photon-dot .dot-core{ fill:var(--bad); filter: drop-shadow(0 0 5px rgba(178,59,59,0.75)); }
+  .photon-dot.collapsed .dot-core{ display:none; }
+  .photon-dot .photon-glyph{ display:none; filter: drop-shadow(0 0 3px rgba(178,59,59,0.6)); }
+  .photon-dot.collapsed .photon-glyph{ display:inline; }
   .photon-glyph .g-line{ stroke:var(--bad); stroke-width:3; stroke-linecap:round; fill:none; }
   .photon-glyph .g-circ{ stroke:var(--bad); stroke-width:2.6; fill:none; }
   .photon-glyph .g-hand{ stroke:var(--bad); stroke-width:3; stroke-linecap:round; fill:none; }
@@ -161,8 +160,7 @@
   .source-state-label.mixed{ font-size:17px; }
   .source-state-label.mixed .or{ font: 700 9px var(--sans); }
 
-  .pulse-dot{ position:absolute; width:11px; height:11px; border-radius:50%; background: var(--good);
-    box-shadow: 0 0 9px 3px rgba(47,143,91,0.6); opacity:0; pointer-events:none; transform:translate(-50%,-50%); z-index:3; }
+  .pulse-dot{ fill: var(--good); opacity:0; pointer-events:none; filter: drop-shadow(0 0 5px rgba(47,143,91,0.8)); }
 
   /* ---- controls ---- */
   .control-row{ display:flex; gap:16px; flex-wrap:wrap; margin-top:14px; }
@@ -433,6 +431,12 @@
             <path class="coinc-line" d="M 84 150 L 40 150 L 40 250 L 450 250"></path>
             <path class="coinc-line" d="M 816 150 L 860 150 L 860 250 L 450 250"></path>
 
+            <!-- moving photons + coincidence pulses: behind every element below -->
+            <g class="photon-dot" id="dot-alice"><circle class="dot-core" r="11"></circle><g class="photon-glyph"></g></g>
+            <g class="photon-dot" id="dot-bob"><circle class="dot-core" r="11"></circle><g class="photon-glyph"></g></g>
+            <circle class="pulse-dot" id="pulse-alice" r="5.5"></circle>
+            <circle class="pulse-dot" id="pulse-bob" r="5.5"></circle>
+
             <!-- source: blue square with two emission "horns", like the SG oven -->
             <g>
               <text class="el-title" x="450" y="82">Entangled Source</text>
@@ -492,10 +496,6 @@
 
           </svg>
 
-          <div class="photon-dot" id="dot-alice"><svg class="photon-glyph" viewBox="-32 -32 64 64" width="64" height="64"></svg></div>
-          <div class="photon-dot" id="dot-bob"><svg class="photon-glyph" viewBox="-32 -32 64 64" width="64" height="64"></svg></div>
-          <div class="pulse-dot" id="pulse-alice"></div>
-          <div class="pulse-dot" id="pulse-bob"></div>
         </div>
       </div>
 
@@ -867,13 +867,9 @@
     SRC: {x:450, y:150}, AP:{x:280,y:150}, AD:{x:110,y:150},
     BP: {x:620, y:150}, BD:{x:790,y:150},
     A_BACK: {x:84,y:150}, B_BACK: {x:816,y:150}, A_OUT: {x:40,y:150}, B_OUT: {x:860,y:150},
-    CORNER_Y: 250, COIN: {x:450,y:250}, VIEW_Y: 62,
-    // just beyond the source horns / polarizer faces / detector faces;
-    // 36px = half the photon arrow (27px line + arrowhead) plus a gap
-    SRC_A_OUT: {x:388,y:150}, SRC_B_OUT: {x:512,y:150},
-    AP_IN: {x:325,y:150}, BP_IN: {x:575,y:150},
-    AP_OUT: {x:246-36,y:150}, BP_OUT: {x:654+36,y:150},
-    AD_IN: {x:110+36,y:150}, BD_IN: {x:790-36,y:150}
+    CORNER_Y: 250, COIN: {x:450,y:250},
+    // middle of each detector's semicircle (the photon ends out of sight)
+    AD_MID: {x:100,y:150}, BD_MID: {x:800,y:150}
   };
 
   // "sync icon" style circular-polarization glyph: two fixed 140-degree arcs
@@ -1102,7 +1098,8 @@
   }
 
   // ---------------- animation helpers ----------------
-  function showEl(el, x, y){ el.style.left = x + 'px'; el.style.top = (y - POS.VIEW_Y) + 'px'; el.style.opacity = '1'; }
+  function placeEl(el, x, y){ el.setAttribute('transform', 'translate(' + x + ',' + y + ')'); }
+  function showEl(el, x, y){ placeEl(el, x, y); el.style.opacity = '1'; }
   function hideEl(el){ el.style.opacity = '0'; }
 
   function animateEl(el, from, to, duration){
@@ -1112,8 +1109,7 @@
       function step(ts){
         if (!start) start = ts;
         var t = Math.min(1, (ts - start) / duration);
-        el.style.left = (from.x + (to.x - from.x) * t) + 'px';
-        el.style.top = (from.y + (to.y - from.y) * t - POS.VIEW_Y) + 'px';
+        placeEl(el, from.x + (to.x - from.x) * t, from.y + (to.y - from.y) * t);
         if (t < 1) requestAnimationFrame(step); else resolve();
       }
       requestAnimationFrame(step);
@@ -1139,8 +1135,7 @@
         var segLen = segs[idx] || 1;
         var localT = segLen > 0 ? (distTarget - acc)/segLen : 1;
         var p0 = points[idx], p1 = points[idx+1] || points[idx];
-        el.style.left = (p0.x + (p1.x - p0.x)*localT) + 'px';
-        el.style.top = (p0.y + (p1.y - p0.y)*localT - POS.VIEW_Y) + 'px';
+        placeEl(el, p0.x + (p1.x - p0.x)*localT, p0.y + (p1.y - p0.y)*localT);
         if (t < 1) requestAnimationFrame(step); else resolve();
       }
       requestAnimationFrame(step);
@@ -1205,20 +1200,19 @@
     setDotUnknown(els.dotAlice); setDotUnknown(els.dotBob);
     els.statusLine.textContent = 'Pair emitted \u2014 traveling to the analyzers\u2026';
 
-    // Unpolarized dot: from just outside the source to the polarizer's
-    // near face, where it disappears into the polarizer.
+    // The unpolarized dot slides out from behind the source, travels
+    // behind the polarizer and changes at its centre (out of sight), so the
+    // polarized arrow only ever appears on the far side.
     return Promise.all([
-      animateEl(els.dotAlice, POS.SRC_A_OUT, POS.AP_IN, dur),
-      animateEl(els.dotBob, POS.SRC_B_OUT, POS.BP_IN, dur)
+      animateEl(els.dotAlice, POS.SRC, POS.AP, dur),
+      animateEl(els.dotBob, POS.SRC, POS.BP, dur)
     ]).then(function(){
-      hideEl(els.dotAlice); hideEl(els.dotBob);
       var aPass = o.a === 'pass', bPass = o.b === 'pass';
-      if (aPass) collapseDot(els.dotAlice, analyzer('alice')); else flashClass(els.aliceRect, 'absorb-flash', dur);
-      if (bPass) collapseDot(els.dotBob, analyzer('bob')); else flashClass(els.bobRect, 'absorb-flash', dur);
+      if (aPass) collapseDot(els.dotAlice, analyzer('alice')); else { hideEl(els.dotAlice); flashClass(els.aliceRect, 'absorb-flash', dur); }
+      if (bPass) collapseDot(els.dotBob, analyzer('bob')); else { hideEl(els.dotBob); flashClass(els.bobRect, 'absorb-flash', dur); }
       var legs = [];
-      // The polarized arrow only emerges beyond the polarizer.
-      if (aPass) legs.push(animateEl(els.dotAlice, POS.AP_OUT, POS.AD_IN, dur)); else legs.push(new Promise(function(r){ setTimeout(r, dur); }));
-      if (bPass) legs.push(animateEl(els.dotBob, POS.BP_OUT, POS.BD_IN, dur)); else legs.push(new Promise(function(r){ setTimeout(r, dur); }));
+      if (aPass) legs.push(animateEl(els.dotAlice, POS.AP, POS.AD_MID, dur)); else legs.push(new Promise(function(r){ setTimeout(r, dur); }));
+      if (bPass) legs.push(animateEl(els.dotBob, POS.BP, POS.BD_MID, dur)); else legs.push(new Promise(function(r){ setTimeout(r, dur); }));
       return Promise.all(legs).then(function(){ return { aPass:aPass, bPass:bPass }; });
     }).then(function(r){
       hideEl(els.dotAlice); hideEl(els.dotBob);
