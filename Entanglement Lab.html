@@ -967,8 +967,8 @@
   // density matrix |00><00| + |11><11|, normalized) -- perfectly
   // correlated in H/V, but uncorrelated at +/-45 degrees.
   BELL_STATES.mixed = { tex:'\\rightarrow\\rightarrow\\ \\textrm{OR}\\ \\uparrow\\uparrow\\quad\\textrm{(classical correlations)}',
-    mixture:[ { w:0.5, amps:{ HH:cx(1,0), HV:cx(0,0), VH:cx(0,0), VV:cx(0,0) } },
-              { w:0.5, amps:{ HH:cx(0,0), HV:cx(0,0), VH:cx(0,0), VV:cx(1,0) } } ] };
+    mixture:[ { w:0.5, prep:['0','0'], amps:{ HH:cx(1,0), HV:cx(0,0), VH:cx(0,0), VV:cx(0,0) } },
+              { w:0.5, prep:['1','1'], amps:{ HH:cx(0,0), HV:cx(0,0), VH:cx(0,0), VV:cx(1,0) } } ] };
 
   // Separable product states: each photon has its own definite
   // polarization (0 = H, 1 = V, + = +45 deg, - = -45 deg).
@@ -978,6 +978,7 @@
   ['00','01','10','11','++','+-','-+','--'].forEach(function(k){
     var a = PROD_VEC[k.charAt(0)], b = PROD_VEC[k.charAt(1)];
     BELL_STATES['prod_' + k] = { tex: PROD_TEX[k.charAt(0)] + PROD_TEX[k.charAt(1)] + '\\quad\\textrm{(separable)}',
+      prep:[k.charAt(0), k.charAt(1)],
       amps:{ HH:cx(a[0]*b[0],0), HV:cx(a[0]*b[1],0), VH:cx(a[1]*b[0],0), VV:cx(a[1]*b[1],0) } };
   });
 
@@ -997,11 +998,14 @@
     return s;
   }
 
-  function jointProbs(){
+  function sourceParts(){
+    var src = BELL_STATES[bellKey];
+    return src.mixture || [{ w:1, amps:src.amps, prep:src.prep }];
+  }
+  function jointProbs(partsOverride){
     var a = analyzer('alice'), b = analyzer('bob');
     var aP = perpOf(a), bP = perpOf(b);
-    var src = BELL_STATES[bellKey];
-    var parts = src.mixture || [{ w:1, amps:src.amps }];
+    var parts = partsOverride || sourceParts();
     var pp = 0, pb = 0, bp = 0, bb = 0;
     parts.forEach(function(part){
       pp += part.w * cabs2(overlap(a, b, part.amps));
@@ -1215,14 +1219,24 @@
   }
 
   // ---------------- sampling ----------------
+  // For a mixture the source first picks which pure pair it prepares (it
+  // "knows" this), then the outcome is drawn for that pair; averaged over
+  // shots this reproduces jointProbs() exactly. prep = the two photons'
+  // prepared polarizations when they are definite (separable / mixed).
   function sampleOutcome(){
-    var probs = jointProbs();
-    var r = Math.random();
-    if (r < probs.pp) return { a:'pass', b:'pass' };
-    if (r < probs.pp + probs.pb) return { a:'pass', b:'block' };
-    if (r < probs.pp + probs.pb + probs.bp) return { a:'block', b:'pass' };
-    return { a:'block', b:'block' };
+    var parts = sourceParts(), r0 = Math.random(), part = parts[parts.length - 1], acc = 0;
+    for (var i = 0; i < parts.length; i++){ acc += parts[i].w; if (r0 < acc){ part = parts[i]; break; } }
+    var probs = jointProbs([{ w:1, amps:part.amps }]);
+    var r = Math.random(), o;
+    if (r < probs.pp) o = { a:'pass', b:'pass' };
+    else if (r < probs.pp + probs.pb) o = { a:'pass', b:'block' };
+    else if (r < probs.pp + probs.pb + probs.bp) o = { a:'block', b:'pass' };
+    else o = { a:'block', b:'block' };
+    o.prep = part.prep || null;
+    return o;
   }
+  var PREP_ANALYZER = { '0':'H', '1':'V', '+':'D', '-':'A' };
+  var PREP_WORD = { '0':'horizontal', '1':'vertical', '+':'+45\u00B0', '-':'\u221245\u00B0' };
 
   function recordOutcome(o){
     counts.total++;
@@ -1381,7 +1395,16 @@
     var gen = countsGen;
 
     setDotUnknown(els.dotAlice); setDotUnknown(els.dotBob);
-    els.statusLine.textContent = 'Pair emitted \u2014 traveling to the analyzers\u2026';
+    if (o.prep) {
+      // Polarizations already fixed at the source: send out the arrows.
+      collapseDot(els.dotAlice, PRESETS[PREP_ANALYZER[o.prep[0]]]);
+      collapseDot(els.dotBob, PRESETS[PREP_ANALYZER[o.prep[1]]]);
+      els.statusLine.textContent = o.prep[0] === o.prep[1]
+        ? 'Pair emitted \u2014 the source prepared two ' + PREP_WORD[o.prep[0]] + ' photons.'
+        : 'Pair emitted \u2014 Alice\u2019s photon is ' + PREP_WORD[o.prep[0]] + ', Bob\u2019s is ' + PREP_WORD[o.prep[1]] + '.';
+    } else {
+      els.statusLine.textContent = 'Pair emitted \u2014 neither photon has a definite polarization yet\u2026';
+    }
 
     // The unpolarized dot slides out from behind the source, travels
     // behind the polarizer and changes at its centre (out of sight), so the
@@ -1823,11 +1846,16 @@
   // right then -- which is exactly what the animation shows.
   function clampP(p){ return p > 1 - 1e-9 ? 1 : (p < 1e-9 ? 0 : p); }
   function simulateShot(){
-    var rho = initialRho();
+    var rho = initialRho(), prepared = null;
+    // rho_corr: the source "knows" which pair it made -- |00> or |11>, 50/50.
+    if (BELL[bellKey].mixed){
+      prepared = Math.random() < 0.5 ? 0 : 3;
+      rho = zeros(4); rho[prepared][prepared] = C1;
+    }
     var st = { A:{ alive:true, done:false, outcome:null }, B:{ alive:true, done:false, outcome:null } };
     var steps = [];
     var nSteps = Math.max(chains.A.length, chains.B.length) + 1;
-    var prevB = reducedLabel(rho, 'B'), midA = null;
+    var rho0 = rho, prevB = reducedLabel(rho, 'B'), midA = null;
     for (var k=1;k<=nSteps;k++){
       var step = { collapsed: { A:false, B:false } };
       ['A','B'].forEach(function(side){
@@ -1870,7 +1898,7 @@
       prevB = step.labels.B;
       steps.push(step);
     }
-    return { steps:steps, A:st.A, B:st.B };
+    return { steps:steps, A:st.A, B:st.B, rho0:rho0, prepared:prepared };
   }
   function tallyShot(res){
     counts.sent++;
@@ -2305,7 +2333,7 @@
     diagram.classList.add('animating');
     var res = simulateShot();
     var markers = { A: $('bk-marker-A'), B: $('bk-marker-B') };
-    var src = nodeCenter('src'), start = initialRho();
+    var src = nodeCenter('src'), start = res.rho0;
     resetNeedles();
     ['A','B'].forEach(function(side){
       var m = markers[side];
@@ -2315,7 +2343,9 @@
       setMarkerTex(m, reducedLabel(start, side));
       m.style.opacity = '1';
     });
-    $('bk-status').textContent = BELL[bellKey].product
+    $('bk-status').textContent = res.prepared !== null
+      ? 'Pair emitted \u2014 this time the source prepared ' + (res.prepared === 0 ? '|00\u27E9' : '|11\u27E9') + '.'
+      : BELL[bellKey].product
       ? 'Pair emitted — a separable pair: each qubit already has its own definite state.'
       : 'Pair emitted — each qubit on its own is “?”: neither has a definite state yet.';
 
@@ -2365,8 +2395,12 @@
     }).then(function(){
       markers.A.style.opacity = '0'; markers.B.style.opacity = '0';
       animBusy = false;
-      diagram.classList.remove('animating');
-      if (showProb) refreshConnectors();
+      // During Auto the static connector markers stay hidden between shots
+      // (they'd flash on for a moment before the next shot starts).
+      if (!streaming){
+        diagram.classList.remove('animating');
+        if (showProb) refreshConnectors();
+      }
       setRunControlsDisabled(streaming);
       flushIdleQueue();
     });
@@ -2445,7 +2479,11 @@
     if (on){
       setRunControlsDisabled(true);
       streamLoop();
-    } else if (!animBusy) setRunControlsDisabled(false);
+    } else if (!animBusy){
+      setRunControlsDisabled(false);
+      diagram.classList.remove('animating');
+      if (showProb) refreshConnectors();
+    }
   }
   function streamLoop(){
     if (!streaming) return;
