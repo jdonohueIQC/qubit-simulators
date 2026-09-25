@@ -258,10 +258,10 @@
   #domain-braket .bk-box.source-box{ background:var(--wave-top); border:1.5px solid var(--wave-top-dark); color:#fff; }
   #domain-braket .bk-box.source-box::before,
   #domain-braket .bk-box.source-box::after{ content:''; position:absolute; top:50%; width:0; height:0; transform:translateY(-50%);
-    border-top:15px solid transparent; border-bottom:15px solid transparent; }
+    border-top:22.5px solid transparent; border-bottom:22.5px solid transparent; z-index:-1; }
   /* horns flare outward from the box, like the Polarization source */
-  #domain-braket .bk-box.source-box::before{ left:-23.5px; border-left:22px solid var(--wave-top); }
-  #domain-braket .bk-box.source-box::after{ right:-23.5px; border-right:22px solid var(--wave-top); }
+  #domain-braket .bk-box.source-box::before{ left:-27.2px; border-left:33px solid var(--wave-top); }
+  #domain-braket .bk-box.source-box::after{ right:-27.2px; border-right:33px solid var(--wave-top); }
   #domain-braket .bk-box.projector-box{ background:var(--element-fill); border:1.5px solid var(--element-stroke); color:#fff; }
   #domain-braket .bk-box.gate-box{ background:#cfe9f7; border:1.5px solid #7fb3d0; color:#20475c; font-size:26px; font-weight:700; }
   #domain-braket .bk-box.measurement-box{ background:#2b2f36; border:1.5px solid #14161a; flex-direction:column; gap:1px; }
@@ -451,8 +451,8 @@
             <!-- source: blue square with two emission "horns", like the SG oven -->
             <g>
               <text class="el-title" x="450" y="82">Source</text>
-              <polygon class="source-horn" points="416,150 398,138 398,162"></polygon>
-              <polygon class="source-horn" points="484,150 502,138 502,162"></polygon>
+              <polygon class="source-horn" points="422,150 395,132 395,168"></polygon>
+              <polygon class="source-horn" points="478,150 505,132 505,168"></polygon>
               <rect class="source-box" x="416" y="116" width="68" height="68" rx="6"></rect>
               <text id="source-state-label" class="source-state-label" x="450" y="150"></text>
             </g>
