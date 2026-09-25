@@ -178,9 +178,10 @@
   .quick-btn.active,
   :root[data-theme="dark"] .quick-btn.active{ background: var(--crimson); border-color: var(--crimson); color:#fff; }
   .quick-btn.source-btn{ font-family:var(--serif); font-size:14px; }
-  .source-row{ display:flex; flex-wrap:wrap; gap:6px; }
-  .source-row .quick-btn{ flex:1 1 150px; padding:8px 6px; white-space:nowrap; }
-  .source-row .quick-btn.wide{ flex:1.7 1 250px; }
+  .source-row{ display:grid; grid-template-columns:repeat(2,1fr); gap:6px; }
+  .source-row .quick-btn{ padding:8px 4px; white-space:nowrap; }
+  .source-row .quick-btn.wide{ grid-column:1/-1; white-space:normal; }
+  .source-control{ border-color: var(--wave-top); }
   .source-row .plain{ font:600 11.5px var(--sans); }
   .source-row .katex{ font-size:1em; }
 
@@ -355,9 +356,7 @@
   #domain-braket .insert-btn:disabled{ opacity:.35; cursor:not-allowed; }
 
   /* ---- run controls / results ---- */
-  #domain-braket .beam-controls{ align-items:flex-start; }
-  #domain-braket .beam-controls > .btn-row:first-child{ flex:1 1 560px; }
-  #domain-braket .bk-status{ flex-basis:100%; order:3; font-size:13px; color:var(--ink-soft); min-height:1.3em; margin-top:-4px; }
+  #domain-braket .bk-status{ font-size:13px; color:var(--ink-soft); min-height:1.3em; margin-top:14px; }
   #domain-braket .bk-results{ display:grid; grid-template-columns:auto 1fr; gap:16px; margin-top:16px; align-items:start; }
   @media (max-width:760px){ #domain-braket .bk-results{ grid-template-columns:1fr; } }
   #domain-braket .bk-results .stats-grid{ margin-top:0; }
@@ -500,19 +499,6 @@
       </div>
 
       <div class="control-row">
-        <div class="polarizer-control" style="flex-basis:100%;">
-          <h3>Entangled Source</h3>
-          <div class="source-row" id="source-buttons">
-            <button class="quick-btn source-btn active" data-bell="psi_minus"><span class="tex" data-tex="\Psi^{-} = \rightarrow\uparrow - \uparrow\rightarrow"></span></button>
-            <button class="quick-btn source-btn" data-bell="psi_plus"><span class="tex" data-tex="\Psi^{+} = \rightarrow\uparrow + \uparrow\rightarrow"></span></button>
-            <button class="quick-btn source-btn" data-bell="phi_minus"><span class="tex" data-tex="\Phi^{-} = \rightarrow\rightarrow - \uparrow\uparrow"></span></button>
-            <button class="quick-btn source-btn" data-bell="phi_plus"><span class="tex" data-tex="\Phi^{+} = \rightarrow\rightarrow + \uparrow\uparrow"></span></button>
-            <button class="quick-btn source-btn wide" data-bell="mixed"><span class="tex" data-tex="\rightarrow\rightarrow\ \textrm{OR}\ \uparrow\uparrow"></span> <span class="plain">(classical correlations)</span></button>
-          </div>
-        </div>
-      </div>
-
-      <div class="control-row">
         <div class="polarizer-control">
           <h3>Alice&#8217;s Polarizer</h3>
           <div class="quick-row" id="alice-buttons">
@@ -530,6 +516,16 @@
               <input type="number" min="-90" max="90" step="1" value="0" class="angle-number" data-pside="alice" aria-label="Custom linear polarizer angle (degrees)">
               <span>&deg;</span>
             </div>
+          </div>
+        </div>
+        <div class="polarizer-control source-control">
+          <h3>Entangled Source</h3>
+          <div class="source-row" id="source-buttons">
+            <button class="quick-btn source-btn active" data-bell="psi_minus"><span class="tex" data-tex="\Psi^{-} = \rightarrow\uparrow - \uparrow\rightarrow"></span></button>
+            <button class="quick-btn source-btn" data-bell="psi_plus"><span class="tex" data-tex="\Psi^{+} = \rightarrow\uparrow + \uparrow\rightarrow"></span></button>
+            <button class="quick-btn source-btn" data-bell="phi_minus"><span class="tex" data-tex="\Phi^{-} = \rightarrow\rightarrow - \uparrow\uparrow"></span></button>
+            <button class="quick-btn source-btn" data-bell="phi_plus"><span class="tex" data-tex="\Phi^{+} = \rightarrow\rightarrow + \uparrow\uparrow"></span></button>
+            <button class="quick-btn source-btn wide" data-bell="mixed"><span class="tex" data-tex="\rightarrow\rightarrow\ \textrm{OR}\ \uparrow\uparrow"></span> <span class="plain">(classical correlations)</span></button>
           </div>
         </div>
         <div class="polarizer-control">
@@ -555,10 +551,10 @@
 
       <div class="beam-controls">
         <div class="btn-row">
-          <button class="btn primary" id="btn-fire-one">Send 1 Pair</button>
-          <button class="btn" id="btn-fire-50">Send 50</button>
-          <button class="btn" id="btn-fire-500">Send 500</button>
-          <button class="btn" id="btn-play">&#9654; Stream</button>
+          <button class="btn primary" id="btn-play">&#9654; Auto</button>
+          <button class="btn" id="btn-fire-one">1 Pair</button>
+          <button class="btn" id="btn-fire-50">50 Pairs</button>
+          <button class="btn" id="btn-fire-500">500 Pairs</button>
           <button class="btn" id="btn-reset">Reset</button>
           <button class="btn" id="btn-toggle-prob">Show Probabilities</button>
         </div>
@@ -575,7 +571,6 @@
           </div>
         </div>
       </div>
-      <div class="status" id="status-line" style="margin-top:6px;">Idle &#8212; the source has not emitted any pairs yet.</div>
 
       <div class="stats-grid">
         <div class="stat-box">
@@ -595,6 +590,8 @@
           <div class="lbl">Pairs Sent</div>
         </div>
       </div>
+
+      <div class="status" id="status-line" style="margin-top:14px; font-size:13px; color:var(--ink-soft);">Idle &#8212; the source has not emitted any pairs yet.</div>
 
       <details class="math-trace-details">
         <summary class="math-trace-summary">Show the math</summary>
@@ -640,15 +637,12 @@
 
       <div class="beam-controls">
         <div class="btn-row">
-          <button class="btn primary" id="bk-send-1">Run 1 Shot</button>
-          <button class="btn" id="bk-send-5">Run 5 Shots</button>
-          <button class="btn" id="bk-send-1000">Run 1000 Shots</button>
-          <button class="btn" id="bk-stream">&#9654; Stream</button>
+          <button class="btn primary" id="bk-stream">&#9654; Auto</button>
+          <button class="btn" id="bk-send-1">1 Shot</button>
+          <button class="btn" id="bk-send-1000">1000 Shots</button>
           <button class="btn" id="bk-show-prob">Show Probabilities</button>
-          <button class="btn" id="bk-clear">Clear Counts</button>
           <button class="btn" id="bk-reset">Reset</button>
         </div>
-        <div class="bk-status" id="bk-status"></div>
         <div class="btn-row">
           <div class="mode-switch small prob-source-switch" id="bk-prob-source" title="Probabilities from the simulated shots (Data) or from quantum theory (Theory)">
             <button data-src="data" class="active">Data</button>
@@ -678,6 +672,8 @@
           <div class="stat-box"><div class="num" id="bk-stat-corr">&#8212;</div><div class="lbl">Correlation E</div></div>
         </div>
       </div>
+
+      <div class="bk-status" id="bk-status"></div>
 
       <details class="math-trace-details">
         <summary class="math-trace-summary">State vectors, operators, and probabilities</summary>
@@ -1096,7 +1092,11 @@
     });
   });
 
+  // Bumped on every reset, so a pair still in flight when the settings
+  // change isn't counted against the new configuration.
+  var countsGen = 0;
   function resetCounts(){
+    countsGen++;
     counts = { aliceSingles:0, bobSingles:0, coincidences:0, total:0 };
     updateStatsDisplay();
   }
@@ -1200,6 +1200,7 @@
     animBusy = true;
     var o = sampleOutcome();
     var dur = Math.max(90, 380 / speedPresets[speedKey]);
+    var gen = countsGen;
 
     setDotUnknown(els.dotAlice); setDotUnknown(els.dotBob);
     els.statusLine.textContent = 'Pair emitted \u2014 traveling to the analyzers\u2026';
@@ -1223,7 +1224,7 @@
       hideEl(els.dotAlice); hideEl(els.dotBob);
       if (r.aPass) flashClass(els.aliceDetector, 'flash', 340);
       if (r.bPass) flashClass(els.bobDetector, 'flash', 340);
-      recordOutcome(o);
+      if (gen === countsGen) recordOutcome(o);
       if (r.aPass && r.bPass){
         els.statusLine.textContent = 'Both detectors fired \u2014 coincidence!';
         return Promise.all([
@@ -1271,12 +1272,12 @@
     streaming = !streaming;
     if (streaming){
       els.playBtn.textContent = '\u23F8 Pause';
-      els.statusLine.textContent = 'Streaming\u2026';
+      els.statusLine.textContent = 'Auto \u2014 sending pairs\u2026';
       restartStream();
     } else {
-      els.playBtn.textContent = '\u25B6 Stream';
+      els.playBtn.textContent = '\u25B6 Auto';
       clearInterval(streamTimer);
-      els.statusLine.textContent = 'Stream paused.';
+      els.statusLine.textContent = 'Auto paused.';
     }
   });
 
@@ -2097,7 +2098,7 @@
     }).then(function(){ m.style.opacity = '0'; });
   }
   function setRunControlsDisabled(dis){
-    ['bk-send-1','bk-send-5','bk-send-1000'].forEach(function(id){ $(id).disabled = dis; });
+    ['bk-send-1','bk-send-1000'].forEach(function(id){ $(id).disabled = dis; });
   }
 
   function runOneShotAnimated(){
@@ -2203,8 +2204,8 @@
   });
   function idleStatus(){
     $('bk-status').textContent = (chains.A.length || chains.B.length)
-      ? 'Click “Run 1 Shot” to send one entangled pair through both circuits.'
-      : 'Click “Run 1 Shot” to send one entangled pair, or use + to add projectors and gates to either side.';
+      ? 'Click “Auto” to keep sending entangled pairs, or “1 Shot” to send just one.'
+      : 'Click “Auto” or “1 Shot” to send entangled pairs, or use + to add gates and projectors to either side.';
   }
   function refreshAll(){
     renderDiagram();
@@ -2219,13 +2220,9 @@
   }
 
   $('bk-send-1').addEventListener('click', function(){ runShots(1); });
-  $('bk-send-5').addEventListener('click', function(){ runShots(5); });
   $('bk-send-1000').addEventListener('click', function(){ runShots(1000); });
   $('bk-show-prob').addEventListener('click', function(){
     whenIdle(function(){ setShowProb(!showProb); });
-  });
-  $('bk-clear').addEventListener('click', function(){
-    whenIdle(function(){ resetCountsOnly(); refreshAll(); });
   });
   $('bk-reset').addEventListener('click', function(){
     setStreaming(false);
@@ -2239,14 +2236,13 @@
     });
   });
 
-  // Stream: animated shots back to back until paused, like the
+  // Auto: animated shots back to back until paused, like the
   // Polarization tab (settings can still be changed between shots).
   var streaming = false;
   function setStreaming(on){
     if (streaming === on) return;
     streaming = on;
-    $('bk-stream').innerHTML = on ? '&#9208; Pause' : '&#9654; Stream';
-    $('bk-stream').classList.toggle('toggle-on', on);
+    $('bk-stream').innerHTML = on ? '&#9208; Pause' : '&#9654; Auto';
     if (on){
       setRunControlsDisabled(true);
       streamLoop();
