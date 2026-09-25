@@ -552,9 +552,8 @@
       <div class="beam-controls">
         <div class="btn-row">
           <button class="btn primary" id="btn-play">&#9654; Auto</button>
-          <button class="btn" id="btn-fire-one">1 Pair</button>
-          <button class="btn" id="btn-fire-50">50 Pairs</button>
-          <button class="btn" id="btn-fire-500">500 Pairs</button>
+          <button class="btn" id="btn-fire-one">1 Shot</button>
+          <button class="btn" id="btn-fire-1000">1000 Shots</button>
           <button class="btn" id="btn-reset">Reset</button>
           <button class="btn" id="btn-toggle-prob">Show Probabilities</button>
         </div>
@@ -1192,7 +1191,7 @@
       if (o.a === 'pass' && o.b === 'pass') counts.coincidences++;
     }
     updateStatsDisplay();
-    els.statusLine.textContent = 'Sent ' + n + ' pairs.';
+    els.statusLine.textContent = 'Ran ' + n + ' shots without animating them.';
   }
 
   function fireAnimated(){
@@ -1250,8 +1249,7 @@
 
   // ---------------- controls wiring ----------------
   document.getElementById('btn-fire-one').addEventListener('click', function(){ if (!streaming) fireAnimated(); });
-  document.getElementById('btn-fire-50').addEventListener('click', function(){ runBulk(50); });
-  document.getElementById('btn-fire-500').addEventListener('click', function(){ runBulk(500); });
+  document.getElementById('btn-fire-1000').addEventListener('click', function(){ runBulk(1000); });
   document.getElementById('btn-reset').addEventListener('click', function(){ resetCounts(); els.statusLine.textContent = 'Idle \u2014 counts reset.'; });
 
   document.querySelectorAll('#speed-switch button').forEach(function(btn){
