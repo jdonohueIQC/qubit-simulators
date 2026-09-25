@@ -347,7 +347,7 @@
   #domain-braket .bk-quick-row.fracs{ margin-top:5px; }
   #domain-braket .bk-quick-row.fracs .quick-btn{ padding:2px 2px; font-size:9.5px; }
   #domain-braket .bk-plus-gap{ display:flex; justify-content:center; padding-top:40px; }
-  #domain-braket .source-formula{ margin-top:9px; text-align:center; font-size:11px; color:var(--ink-soft); }
+  #domain-braket .bk-node-sub.source-formula{ margin-top:6px; font-size:11px; color:var(--ink-soft); white-space:nowrap; }
   #domain-braket .insert-btn{ width:28px; height:28px; border-radius:50%; border:1.5px solid var(--ink-soft); background:#fff; color:var(--ink-soft);
     font:700 15px var(--sans); line-height:1; cursor:pointer; display:flex; align-items:center; justify-content:center; padding:0; }
   :root[data-theme="dark"] #domain-braket .insert-btn{ background:#242220; }
@@ -1738,7 +1738,7 @@
     return '<div class="bk-node" data-node="src">' +
       '<div class="bk-node-title">Entangled Source</div>' +
       '<div class="bk-box source-box">' + katexSpan(sourceSymbolTex(bellKey)) + '</div>' +
-      '<div class="bk-node-sub"></div></div>';
+      '<div class="bk-node-sub source-formula">' + katexSpan(sourceFormulaTex(bellKey)) + '</div></div>';
   }
   function elementSubHtml(el){
     if (el.type === 'projector') return absorbed[el.id] ? 'Lost: ' + absorbed[el.id] : '';
@@ -1844,8 +1844,7 @@
         katexSpan(sourceSymbolTex(k)) + '</button>';
     }).join('');
     return '<div class="bk-card source-card"><div class="ec-head"><h3>Source</h3></div>' +
-      '<div class="bk-quick-row">' + btns + '</div>' +
-      '<div class="source-formula">' + katexSpan(sourceFormulaTex(bellKey)) + '</div></div>';
+      '<div class="bk-quick-row">' + btns + '</div></div>';
   }
   function elementCardHtml(side, idx){
     var el = chains[side][idx], btns;
