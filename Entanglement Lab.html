@@ -180,7 +180,9 @@
   .source-row{ display:grid; grid-template-columns:repeat(2,1fr); gap:6px; }
   .source-row .quick-btn{ padding:8px 4px; white-space:nowrap; }
   .source-row .quick-btn.wide{ grid-column:1/-1; white-space:normal; }
-  .source-control{ border-color: var(--wave-top); }
+  .source-control{ border-color: var(--wave-top); flex:1.3 1 330px; }
+  .source-prod-row{ display:grid; grid-template-columns:repeat(8,1fr); gap:4px; margin-bottom:6px; }
+  .source-prod-row .quick-btn{ padding:7px 0; font-size:13px; }
   .source-row .plain{ font:600 11.5px var(--sans); }
   .source-row .katex{ font-size:1em; }
 
@@ -328,6 +330,10 @@
   #domain-braket .bk-card{ flex:0 0 140px; width:140px; border:1px solid var(--line); border-radius:8px; padding:10px 10px 12px; background:#fdfcfa; }
   :root[data-theme="dark"] #domain-braket .bk-card{ background:#2a2825; }
   #domain-braket .bk-card.source-card{ border-color:var(--wave-top); }
+  /* the source column is a little wider, to fit four product states per row */
+  #domain-braket .bk-card.source-card, #domain-braket .bk-node[data-node="src"]{ flex-basis:180px; width:180px; }
+  #domain-braket .bk-quick-row.four{ grid-template-columns:repeat(4,1fr); margin-bottom:5px; }
+  #domain-braket .bk-quick-row.four .quick-btn{ padding:5px 0; }
   #domain-braket .ec-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; gap:6px; }
   #domain-braket .ec-head h3{ font-family:var(--display); font-weight:700; font-size:16px; margin:0; letter-spacing:.01em; }
   #domain-braket .ec-side{ font:700 9.5px var(--sans); color:var(--ink-soft); text-transform:uppercase; letter-spacing:.03em; margin:-5px 0 7px; }
@@ -346,6 +352,10 @@
   #domain-braket .bk-quick-row.three{ grid-template-columns:repeat(3,1fr); }
   #domain-braket .bk-quick-row.fracs{ margin-top:5px; }
   #domain-braket .bk-quick-row.fracs .quick-btn{ padding:2px 2px; font-size:9.5px; }
+  /* KaTeX's layout boxes can extend past a button (tall \dfrac labels do);
+     keep them from stealing clicks meant for the neighbouring button */
+  #domain-braket .quick-btn .katex{ pointer-events:none; }
+  #domain-braket .bk-quick-row.fracs .quick-btn{ overflow:hidden; }
   #domain-braket .bk-plus-gap{ display:flex; justify-content:center; padding-top:40px; }
   #domain-braket .bk-node-sub.source-formula{ margin-top:6px; font-size:11px; color:var(--ink-soft); white-space:nowrap; }
   #domain-braket .insert-btn{ width:28px; height:28px; border-radius:50%; border:1.5px solid var(--ink-soft); background:#fff; color:var(--ink-soft);
@@ -521,6 +531,16 @@
         </div>
         <div class="polarizer-control source-control">
           <h3>Entangled Source</h3>
+          <div class="source-prod-row" id="source-prod-buttons">
+            <button class="quick-btn source-btn" data-bell="prod_00" title="Separable: Alice H, Bob H"><span class="tex" data-tex="\rightarrow\rightarrow"></span></button>
+            <button class="quick-btn source-btn" data-bell="prod_01" title="Separable: Alice H, Bob V"><span class="tex" data-tex="\rightarrow\uparrow"></span></button>
+            <button class="quick-btn source-btn" data-bell="prod_10" title="Separable: Alice V, Bob H"><span class="tex" data-tex="\uparrow\rightarrow"></span></button>
+            <button class="quick-btn source-btn" data-bell="prod_11" title="Separable: Alice V, Bob V"><span class="tex" data-tex="\uparrow\uparrow"></span></button>
+            <button class="quick-btn source-btn" data-bell="prod_++" title="Separable: Alice +45°, Bob +45°"><span class="tex" data-tex="\nearrow\nearrow"></span></button>
+            <button class="quick-btn source-btn" data-bell="prod_+-" title="Separable: Alice +45°, Bob −45°"><span class="tex" data-tex="\nearrow\searrow"></span></button>
+            <button class="quick-btn source-btn" data-bell="prod_-+" title="Separable: Alice −45°, Bob +45°"><span class="tex" data-tex="\searrow\nearrow"></span></button>
+            <button class="quick-btn source-btn" data-bell="prod_--" title="Separable: Alice −45°, Bob −45°"><span class="tex" data-tex="\searrow\searrow"></span></button>
+          </div>
           <div class="source-row" id="source-buttons">
             <button class="quick-btn source-btn active" data-bell="psi_minus"><span class="tex" data-tex="\Psi^{-} = \rightarrow\uparrow - \uparrow\rightarrow"></span></button>
             <button class="quick-btn source-btn" data-bell="psi_plus"><span class="tex" data-tex="\Psi^{+} = \rightarrow\uparrow + \uparrow\rightarrow"></span></button>
@@ -781,6 +801,17 @@
     mixture:[ { w:0.5, amps:{ HH:cx(1,0), HV:cx(0,0), VH:cx(0,0), VV:cx(0,0) } },
               { w:0.5, amps:{ HH:cx(0,0), HV:cx(0,0), VH:cx(0,0), VV:cx(1,0) } } ] };
 
+  // Separable product states: each photon has its own definite
+  // polarization (0 = H, 1 = V, + = +45 deg, - = -45 deg).
+  var PROD_VEC = { '0':[1,0], '1':[0,1], '+':[S,S], '-':[S,-S] };
+  var PROD_ARROW = { '0':'\u2192', '1':'\u2191', '+':'\u2197', '-':'\u2198' };
+  var PROD_TEX = { '0':'\\rightarrow', '1':'\\uparrow', '+':'\\nearrow', '-':'\\searrow' };
+  ['00','01','10','11','++','+-','-+','--'].forEach(function(k){
+    var a = PROD_VEC[k.charAt(0)], b = PROD_VEC[k.charAt(1)];
+    BELL_STATES['prod_' + k] = { tex: PROD_TEX[k.charAt(0)] + PROD_TEX[k.charAt(1)] + '\\quad\\textrm{(separable)}',
+      amps:{ HH:cx(a[0]*b[0],0), HV:cx(a[0]*b[1],0), VH:cx(a[1]*b[0],0), VV:cx(a[1]*b[1],0) } };
+  });
+
   var bellKey = 'psi_minus';
 
   function perpOf(p){
@@ -972,6 +1003,10 @@
     var el = els.sourceStateLabel;
     while (el.firstChild) el.removeChild(el.firstChild);
     el.classList.toggle('mixed', key === 'mixed');
+    if (key.indexOf('prod_') === 0) {
+      el.appendChild(tspan(PROD_ARROW[key.charAt(5)] + PROD_ARROW[key.charAt(6)], {}));
+      return;
+    }
     if (key === 'mixed') {
       el.appendChild(tspan('\u2192\u2192', { x:450, dy:'-17' }));
       el.appendChild(tspan('or', { x:450, dy:'17', 'class':'or' }));
@@ -1275,7 +1310,7 @@
   });
 
   // ---------------- init ----------------
-  document.querySelectorAll('#source-buttons .tex').forEach(function(el){ renderTex(el, el.getAttribute('data-tex')); });
+  document.querySelectorAll('#source-buttons .tex, #source-prod-buttons .tex').forEach(function(el){ renderTex(el, el.getAttribute('data-tex')); });
   setBellState(bellKey);
   updatePolarizerVisual('alice');
   updatePolarizerVisual('bob');
@@ -1359,10 +1394,19 @@
     // Classically correlated, not entangled: (|00><00| + |11><11|)/2.
     mixed:     { tex:'\\rho_{\\text{corr}}', mixed:true }
   };
+  // Separable product states |ab>, a,b in {0,1,+,-}.
+  var PROD_ROWS = [['00','01','10','11'], ['++','+-','-+','--']];
+  PROD_ROWS.forEach(function(row){ row.forEach(function(k){
+    var a = KETS[k.charAt(0)], b = KETS[k.charAt(1)];
+    BELL['prod_' + k] = { tex: '{' + k.charAt(0) + '}{' + k.charAt(1) + '}', product:[k.charAt(0), k.charAt(1)],
+      psi:[cmul(a[0],b[0]), cmul(a[0],b[1]), cmul(a[1],b[0]), cmul(a[1],b[1])] };
+  }); });
   var BELL_ORDER = ['psi_minus','psi_plus','phi_minus','phi_plus','mixed'];
   var PURE_BELL = ['psi_minus','psi_plus','phi_minus','phi_plus'];
   function sourceSymbolTex(k){ return BELL[k].mixed ? BELL[k].tex : ketTex(BELL[k].tex); }
   function sourceFormulaTex(k){
+    var pr = BELL[k].product;
+    if (pr) return ketTex(pr[0]) + '\\otimes' + ketTex(pr[1]);
     return BELL[k].mixed ? '\\tfrac{1}{2}\\bigl(' + projectorTex('00') + '+' + projectorTex('11') + '\\bigr)' : psiTex(BELL[k].psi);
   }
 
@@ -1832,13 +1876,20 @@
       '<div class="bk-quick-row fracs">' + ['W','V'].map(btn).join('') + '</div></div>';
   }
   function sourceCardHtml(){
+    var prodBtns = PROD_ROWS.map(function(row){
+      return '<div class="bk-quick-row four">' + row.map(function(p){
+        var k = 'prod_' + p;
+        return '<button class="quick-btn source-btn' + (k === bellKey ? ' active' : '') + '" data-bk-bell="' + k + '" title="Separable state">' +
+          katexSpan(sourceSymbolTex(k)) + '</button>';
+      }).join('') + '</div>';
+    }).join('');
     var btns = BELL_ORDER.map(function(k){
       var wide = BELL[k].mixed ? ' wide' : '', title = BELL[k].mixed ? ' title="Classically correlated mixed state (not entangled)"' : '';
       return '<button class="quick-btn source-btn' + wide + (k === bellKey ? ' active' : '') + '" data-bk-bell="' + k + '"' + title + '>' +
         katexSpan(sourceSymbolTex(k)) + '</button>';
     }).join('');
     return '<div class="bk-card source-card"><div class="ec-head"><h3>Source</h3></div>' +
-      '<div class="bk-quick-row">' + btns + '</div></div>';
+      prodBtns + '<div class="bk-quick-row">' + btns + '</div></div>';
   }
   function elementCardHtml(side, idx){
     var el = chains[side][idx], btns;
@@ -1970,13 +2021,18 @@
   function traceRow(label, tex, plain){
     return '<div class="trace-row"><span class="trace-label">' + label + '</span><span>' + (tex ? katexSpan(tex) : plain) + '</span></div>';
   }
+  function aloneHtml(rho, side){
+    var lab = reducedLabel(rho, side);
+    return katexSpan(lab) + (lab === '?' ? '&nbsp; (&rho;<sub>' + side + '</sub> = I/2)' : '');
+  }
   function updateMathTrace(){
     var html = '';
     var rho = initialRho();
     html += '<div class="trace-step"><div class="trace-step-title">Source</div>' +
-      traceRow('State', sourceSymbolTex(bellKey) + '=' + sourceFormulaTex(bellKey)) +
-      traceRow('Alice alone', null, katexSpan(reducedLabel(rho,'A')) + '&nbsp; (&rho;<sub>A</sub> = I/2)') +
-      traceRow('Bob alone', null, katexSpan(reducedLabel(rho,'B')) + '&nbsp; (&rho;<sub>B</sub> = I/2)') + '</div>';
+      traceRow('State', sourceSymbolTex(bellKey) + '=' + sourceFormulaTex(bellKey) +
+        (BELL[bellKey].product && /[+-]/.test(BELL[bellKey].product.join('')) ? '=' + psiTex(BELL[bellKey].psi) : '')) +
+      traceRow('Alice alone', null, aloneHtml(rho, 'A')) +
+      traceRow('Bob alone', null, aloneHtml(rho, 'B')) + '</div>';
     var dead = false;
     ['A','B'].forEach(function(side){
       chains[side].forEach(function(el){
@@ -2111,7 +2167,9 @@
       setMarkerTex(m, reducedLabel(start, side));
       m.style.opacity = '1';
     });
-    $('bk-status').textContent = 'Pair emitted — each qubit on its own is “?”: neither has a definite state yet.';
+    $('bk-status').textContent = BELL[bellKey].product
+      ? 'Pair emitted — a separable pair: each qubit already has its own definite state.'
+      : 'Pair emitted — each qubit on its own is “?”: neither has a definite state yet.';
 
     var chain = wait(120);
     res.steps.forEach(function(step){
