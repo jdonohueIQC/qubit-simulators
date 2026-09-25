@@ -3034,26 +3034,32 @@
   }
 
   // ---------------- figure: down-converted photons ----------------
-  // The figure's photon paths (in its layer coordinates): crystal -> each
-  // beam splitter (continuing to the far detector), and each splitter's
-  // reflected leg to the near detector. Instead of a dashed line, each is
-  // drawn as randomly placed dots -- more of them the higher gen is, and
-  // none at gen = 0 -- re-scattered on every change and every collection.
-  var PHOTON_PATHS = [
-    [460, 782.36, 685, 652.36], [642.68, 675.04, 600.43, 607.16],
-    [460, 782.36, 685, 912.36], [640, 887.36, 600, 956.59]
+  // The figure's photon paths (in its layer coordinates), as mirror-image
+  // pairs about the pump beam: crystal -> each beam splitter (continuing to
+  // the far detector), and each splitter's reflected leg to the near
+  // detector. Instead of a dashed line each pair gets one random pattern of
+  // dots drawn identically (mirrored) on both arms -- a photon on one side
+  // always has its twin on the other. More dots the higher gen is, none at
+  // gen = 0; re-scattered on every change and every collection.
+  var PHOTON_PAIRS = [
+    [[460, 782.36, 685, 652.36], [460, 782.36, 685, 912.36]],
+    [[642.68, 675.04, 600.43, 607.16], [640, 887.36, 600, 956.59]]
   ];
   var DOTS_PER_UNIT = { 0:0, 0.001:0.03, 0.01:0.08, 0.1:0.2 };
   function scatterPhotons(){
     var g = $('sp-photons');
     if (!g) return;
     var density = DOTS_PER_UNIT[sp.gen] || 0, html = '';
-    PHOTON_PATHS.forEach(function(seg){
+    var dot = function(seg, t, off, r){
       var dx = seg[2] - seg[0], dy = seg[3] - seg[1], len = Math.sqrt(dx*dx + dy*dy);
-      var nx = -dy / len, ny = dx / len, n = poisson(density * len);
+      return '<circle cx="' + (seg[0] + dx*t - dy/len*off).toFixed(1) + '" cy="' + (seg[1] + dy*t + dx/len*off).toFixed(1) + '" r="' + r.toFixed(2) + '"></circle>';
+    };
+    PHOTON_PAIRS.forEach(function(pair){
+      var up = pair[0], len = Math.hypot(up[2] - up[0], up[3] - up[1]), n = poisson(density * len);
       for (var i = 0; i < n; i++){
         var t = Math.random(), off = (Math.random() - 0.5) * 3, r = 1.5 + Math.random() * 1.3;
-        html += '<circle cx="' + (seg[0] + dx*t + nx*off).toFixed(1) + '" cy="' + (seg[1] + dy*t + ny*off).toFixed(1) + '" r="' + r.toFixed(2) + '"></circle>';
+        // the lower arm runs mirrored, so its perpendicular offset flips sign
+        html += dot(pair[0], t, off, r) + dot(pair[1], t, -off, r);
       }
     });
     g.innerHTML = html;
