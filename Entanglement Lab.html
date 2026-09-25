@@ -128,9 +128,11 @@
   .polarizer-box{ fill: var(--element-fill); stroke: var(--element-stroke); stroke-width: 1.5; transition: fill .12s; }
   .polarizer-box.absorb-flash{ fill: var(--bad); }
   .polarizer-axis{ stroke:#ffffff; stroke-width:3; stroke-linecap:round; }
-  .polarizer-circ-main{ fill:none; stroke:#ffffff; stroke-width:2.6; }
-  .polarizer-circ-hand{ fill:none; stroke:#ffffff; stroke-width:3; stroke-linecap:round; }
-  .polarizer-circ-arrow{ fill:#ffffff; }
+  /* Circular-polarizer icon, matching the Superposition Lab's: a circle
+     with two thin ~130-degree handedness arcs just outside it, each ending
+     in a marker arrowhead (markers scale with the arc's stroke width). */
+  .circ-icon-circle{ fill:none; stroke:#ffffff; stroke-width:3.4; }
+  .circ-icon-arc{ fill:none; stroke:#ffffff; stroke-width:1.5; }
 
   .detector-shape{ fill: var(--element-fill); stroke: var(--element-stroke); stroke-width: 1.5; transition: filter .12s; }
   .detector-shape.flash{ filter: drop-shadow(0 0 5px var(--gold)) drop-shadow(0 0 11px var(--gold)); }
@@ -151,9 +153,8 @@
   .photon-dot .photon-glyph{ display:none; filter: drop-shadow(0 0 3px rgba(178,59,59,0.6)); }
   .photon-dot.collapsed .photon-glyph{ display:inline; }
   .photon-glyph .g-line{ stroke:var(--bad); stroke-width:3; stroke-linecap:round; fill:none; }
-  .photon-glyph .g-circ{ stroke:var(--bad); stroke-width:2.6; fill:none; }
-  .photon-glyph .g-hand{ stroke:var(--bad); stroke-width:3; stroke-linecap:round; fill:none; }
-  .photon-glyph .g-head{ fill:var(--bad); }
+  .photon-glyph .circ-icon-circle{ stroke:var(--bad); }
+  .photon-glyph .circ-icon-arc{ stroke:var(--bad); }
   .arrowhead-red{ fill: var(--bad); }
   .source-state-label{ font: 400 25px KaTeX_Main, "Times New Roman", serif; fill:#ffffff; text-anchor:middle; dominant-baseline:central; }
   .source-state-label .sup{ font-size:16px; }
@@ -449,7 +450,7 @@
 
             <!-- source: blue square with two emission "horns", like the SG oven -->
             <g>
-              <text class="el-title" x="450" y="82">Entangled Source</text>
+              <text class="el-title" x="450" y="82">Source</text>
               <polygon class="source-horn" points="416,150 398,138 398,162"></polygon>
               <polygon class="source-horn" points="484,150 502,138 502,162"></polygon>
               <rect class="source-box" x="416" y="116" width="68" height="68" rx="6"></rect>
@@ -461,11 +462,7 @@
               <text class="el-title" x="280" y="90">Alice&#8217;s Polarizer</text>
               <rect id="alice-polarizer-rect" class="polarizer-box" x="246" y="116" width="68" height="68" rx="6"></rect>
               <line id="alice-axis" class="polarizer-axis" x1="280" y1="150" x2="280" y2="150" marker-start="url(#arrow-w)" marker-end="url(#arrow-w)"></line>
-              <circle id="alice-circ-main" class="polarizer-circ-main" cx="280" cy="150" r="16" style="display:none"></circle>
-              <path id="alice-hand-r" class="polarizer-circ-hand" d="" style="display:none"></path>
-              <path id="alice-arrow-r" class="polarizer-circ-arrow" d="M 0 0 L -7.5 -3.45 L -7.5 3.45 Z" transform="" style="display:none"></path>
-              <path id="alice-hand-l" class="polarizer-circ-hand" d="" style="display:none"></path>
-              <path id="alice-arrow-l" class="polarizer-circ-arrow" d="M 0 0 L -7.5 -3.45 L -7.5 3.45 Z" transform="" style="display:none"></path>
+              <g id="alice-circ-icon" transform="translate(280,150)" style="display:none"></g>
               <text id="alice-symbol" class="el-symbol-label" x="280" y="204">0&#176;</text>
             </g>
 
@@ -481,11 +478,7 @@
               <text class="el-title" x="620" y="90">Bob&#8217;s Polarizer</text>
               <rect id="bob-polarizer-rect" class="polarizer-box" x="586" y="116" width="68" height="68" rx="6"></rect>
               <line id="bob-axis" class="polarizer-axis" x1="620" y1="150" x2="620" y2="150" marker-start="url(#arrow-w)" marker-end="url(#arrow-w)"></line>
-              <circle id="bob-circ-main" class="polarizer-circ-main" cx="620" cy="150" r="16" style="display:none"></circle>
-              <path id="bob-hand-r" class="polarizer-circ-hand" d="" style="display:none"></path>
-              <path id="bob-arrow-r" class="polarizer-circ-arrow" d="M 0 0 L -7.5 -3.45 L -7.5 3.45 Z" transform="" style="display:none"></path>
-              <path id="bob-hand-l" class="polarizer-circ-hand" d="" style="display:none"></path>
-              <path id="bob-arrow-l" class="polarizer-circ-arrow" d="M 0 0 L -7.5 -3.45 L -7.5 3.45 Z" transform="" style="display:none"></path>
+              <g id="bob-circ-icon" transform="translate(620,150)" style="display:none"></g>
               <text id="bob-symbol" class="el-symbol-label" x="620" y="204">0&#176;</text>
             </g>
 
@@ -530,7 +523,7 @@
           </div>
         </div>
         <div class="polarizer-control source-control">
-          <h3>Entangled Source</h3>
+          <h3>Source</h3>
           <div class="source-prod-row" id="source-prod-buttons">
             <button class="quick-btn source-btn" data-bell="prod_00" title="Separable: Alice H, Bob H"><span class="tex" data-tex="\rightarrow\rightarrow"></span></button>
             <button class="quick-btn source-btn" data-bell="prod_01" title="Separable: Alice H, Bob V"><span class="tex" data-tex="\rightarrow\uparrow"></span></button>
@@ -862,16 +855,12 @@
 
   var els = {
     aliceAxis: document.getElementById('alice-axis'),
-    aliceCircMain: document.getElementById('alice-circ-main'),
-    aliceHandR: document.getElementById('alice-hand-r'), aliceArrowR: document.getElementById('alice-arrow-r'),
-    aliceHandL: document.getElementById('alice-hand-l'), aliceArrowL: document.getElementById('alice-arrow-l'),
+    aliceCircIcon: document.getElementById('alice-circ-icon'),
     aliceSymbol: document.getElementById('alice-symbol'),
     aliceRect: document.getElementById('alice-polarizer-rect'),
 
     bobAxis: document.getElementById('bob-axis'),
-    bobCircMain: document.getElementById('bob-circ-main'),
-    bobHandR: document.getElementById('bob-hand-r'), bobArrowR: document.getElementById('bob-arrow-r'),
-    bobHandL: document.getElementById('bob-hand-l'), bobArrowL: document.getElementById('bob-arrow-l'),
+    bobCircIcon: document.getElementById('bob-circ-icon'),
     bobSymbol: document.getElementById('bob-symbol'),
     bobRect: document.getElementById('bob-polarizer-rect'),
 
@@ -903,34 +892,36 @@
     AD_MID: {x:100,y:150}, BD_MID: {x:800,y:150}
   };
 
-  // "sync icon" style circular-polarization glyph: two fixed 140-degree arcs
-  // (top and bottom), always drawn the same way. Only the arrowhead's end of
-  // each arc changes between R and L, which is enough to read as clockwise
-  // vs counterclockwise without redrawing the arcs themselves.
-  function arcPoint(cx0, cy0, r, deg){
-    var rad = deg * Math.PI/180;
-    return { x: cx0 + r*Math.cos(rad), y: cy0 + r*Math.sin(rad) };
+  // Circular-polarization glyph, ported from the Superposition Lab's
+  // circularIconMarkup(): a circle plus two ~130-degree arcs on opposite
+  // sides, traced as short polylines in the rotation's direction so the
+  // marker arrowhead lands on the leading end. Their 56px icon uses a
+  // radius-11 circle with arcs 4px outside it; ours is scaled to the 68px box.
+  var CIRC_R = 11 * 68/56, CIRC_PAD = 4 * 68/56;
+  // arcs centred on the left and right of the circle, as the Superposition
+  // Lab's icon appears in its diagram (its [25,155]/[205,335] rotated 90 deg)
+  var HANDEDNESS_ARC_RANGES = [[115, 245], [-65, 65]], HANDEDNESS_ARC_STEPS = 10;
+  function handednessArcD(rad, t1, t2, clockwise){
+    var from = clockwise ? t2 : t1, to = clockwise ? t1 : t2, d = '';
+    for (var k = 0; k <= HANDEDNESS_ARC_STEPS; k++){
+      var t = (from + (to - from) * (k / HANDEDNESS_ARC_STEPS)) * Math.PI/180;
+      d += (k === 0 ? 'M' : 'L') + (rad*Math.cos(t)).toFixed(2) + ',' + (-rad*Math.sin(t)).toFixed(2) + ' ';
+    }
+    return d.trim();
   }
-  function tangentAngle(deg, clockwise){
-    var rad = deg * Math.PI/180;
-    var dx = clockwise ? -Math.sin(rad) : Math.sin(rad);
-    var dy = clockwise ? Math.cos(rad) : -Math.cos(rad);
-    return Math.atan2(dy, dx) * 180/Math.PI;
-  }
-  function syncArc(cx0, cy0, r, startDeg, endDeg){
-    var p1 = arcPoint(cx0, cy0, r, startDeg), p2 = arcPoint(cx0, cy0, r, endDeg);
-    return 'M ' + p1.x + ' ' + p1.y + ' A ' + r + ' ' + r + ' 0 0 1 ' + p2.x + ' ' + p2.y;
+  function circularIconMarkup(clockwise, markerId){
+    var a = CIRC_R + CIRC_PAD;
+    return '<circle class="circ-icon-circle" cx="0" cy="0" r="' + CIRC_R.toFixed(2) + '"></circle>' +
+      HANDEDNESS_ARC_RANGES.map(function(rg){
+        return '<path class="circ-icon-arc" d="' + handednessArcD(a, rg[0], rg[1], clockwise) + '" marker-end="url(#' + markerId + ')"></path>';
+      }).join('');
   }
 
   function updatePolarizerVisual(side){
     var p = analyzer(side);
     var cxp = (side === 'alice') ? POS.AP.x : POS.BP.x;
     var axisEl = (side === 'alice') ? els.aliceAxis : els.bobAxis;
-    var circMainEl = (side === 'alice') ? els.aliceCircMain : els.bobCircMain;
-    var arc1 = (side === 'alice') ? els.aliceHandR : els.bobHandR;
-    var head1 = (side === 'alice') ? els.aliceArrowR : els.bobArrowR;
-    var arc2 = (side === 'alice') ? els.aliceHandL : els.bobHandL;
-    var head2 = (side === 'alice') ? els.aliceArrowL : els.bobArrowL;
+    var circIcon = (side === 'alice') ? els.aliceCircIcon : els.bobCircIcon;
     var symEl = (side === 'alice') ? els.aliceSymbol : els.bobSymbol;
 
     if (p.type === 'linear') {
@@ -940,24 +931,12 @@
       axisEl.setAttribute('x1', cxp - dx); axisEl.setAttribute('y1', 150 - dy);
       axisEl.setAttribute('x2', cxp + dx); axisEl.setAttribute('y2', 150 + dy);
       axisEl.style.display = '';
-      [circMainEl, arc1, head1, arc2, head2].forEach(function(el){ el.style.display = 'none'; });
+      circIcon.style.display = 'none';
       symEl.textContent = p.angle + '\u00B0';
     } else {
       axisEl.style.display = 'none';
-      circMainEl.style.display = '';
-      var r = 22;
-      var clockwise = p.hand === 'R';
-      // two fixed arcs: bottom (-160 to -20) and top (20 to 160)
-      arc1.setAttribute('d', syncArc(cxp, 150, r, -160, -20));
-      arc2.setAttribute('d', syncArc(cxp, 150, r, 20, 160));
-      arc1.style.display = ''; arc2.style.display = '';
-      var head1Deg = clockwise ? -20 : -160;
-      var head2Deg = clockwise ? 160 : 20;
-      var pt1 = arcPoint(cxp, 150, r, head1Deg), ang1 = tangentAngle(head1Deg, clockwise);
-      var pt2 = arcPoint(cxp, 150, r, head2Deg), ang2 = tangentAngle(head2Deg, clockwise);
-      head1.setAttribute('transform', 'translate(' + pt1.x + ',' + pt1.y + ') rotate(' + ang1 + ')');
-      head2.setAttribute('transform', 'translate(' + pt2.x + ',' + pt2.y + ') rotate(' + ang2 + ')');
-      head1.style.display = ''; head2.style.display = '';
+      circIcon.innerHTML = circularIconMarkup(p.hand === 'R', 'arrow-w');
+      circIcon.style.display = '';
       symEl.textContent = p.hand;
     }
   }
@@ -1194,14 +1173,7 @@
       html = '<line class="g-line" x1="-27" y1="0" x2="27" y2="0" transform="rotate(' + (-p.angle) + ')"' +
         ' marker-start="url(#arrow-r)" marker-end="url(#arrow-r)"></line>';
     } else {
-      var r = 22, cw = p.hand === 'R';
-      var h1 = cw ? -20 : -160, h2 = cw ? 160 : 20;
-      var p1 = arcPoint(0, 0, r, h1), p2 = arcPoint(0, 0, r, h2);
-      html = '<circle class="g-circ" cx="0" cy="0" r="16"></circle>' +
-        '<path class="g-hand" d="' + syncArc(0, 0, r, -160, -20) + '"></path>' +
-        '<path class="g-hand" d="' + syncArc(0, 0, r, 20, 160) + '"></path>' +
-        '<path class="g-head" d="M 0 0 L -7.5 -3.45 L -7.5 3.45 Z" transform="translate(' + p1.x + ',' + p1.y + ') rotate(' + tangentAngle(h1, cw) + ')"></path>' +
-        '<path class="g-head" d="M 0 0 L -7.5 -3.45 L -7.5 3.45 Z" transform="translate(' + p2.x + ',' + p2.y + ') rotate(' + tangentAngle(h2, cw) + ')"></path>';
+      html = circularIconMarkup(p.hand === 'R', 'arrow-r');
     }
     svg.innerHTML = html;
     el.classList.add('collapsed');
@@ -1774,7 +1746,7 @@
   }
   function sourceNodeHtml(){
     return '<div class="bk-node" data-node="src">' +
-      '<div class="bk-node-title">Entangled Source</div>' +
+      '<div class="bk-node-title">Source</div>' +
       '<div class="bk-box source-box">' + katexSpan(sourceSymbolTex(bellKey)) + '</div>' +
       '<div class="bk-node-sub source-formula">' + katexSpan(sourceFormulaTex(bellKey)) + '</div></div>';
   }
