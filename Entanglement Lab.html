@@ -3034,34 +3034,50 @@
   }
 
   // ---------------- figure: down-converted photons ----------------
-  // The figure's photon paths (in its layer coordinates), as mirror-image
-  // pairs about the pump beam: crystal -> each beam splitter (continuing to
-  // the far detector), and each splitter's reflected leg to the near
-  // detector. Instead of a dashed line each pair gets one random pattern of
-  // dots drawn identically (mirrored) on both arms -- a photon on one side
-  // always has its twin on the other. More dots the higher gen is, none at
-  // gen = 0; re-scattered on every change and every collection.
-  var PHOTON_PAIRS = [
-    [[460, 782.36, 685, 652.36], [460, 782.36, 685, 912.36]],
-    [[642.68, 675.04, 600.43, 607.16], [640, 887.36, 600, 956.59]]
-  ];
+  // Photon dots on the figure (its layer coordinates; upper arm = Alice,
+  // lower = Bob, mirror images about the pump beam). Before the polarizing
+  // beam splitters every pair is drawn as two mirrored dots. After them each
+  // pair is routed by a joint outcome (a, b) drawn from Tr[(Pa (x) Pb) rho]
+  // for the chosen bases and noise (dark counts and efficiency ignored):
+  // outcome 0 = transmitted, 1 = reflected. So each output carries on
+  // average half the dots, or all / none of them when the singles are
+  // biased (e.g. |00> in Z), and the two sides stay correlated pair by pair.
+  // More dots the higher gen is, none at gen = 0; re-scattered on every
+  // change and every collection.
+  var CRYSTAL = [460, 782.36];
+  var ARMS = {
+    A: { pbs:[642.68, 676.8], out:[[685, 652.36], [600.43, 607.16]] },   // [transmitted, reflected] ends
+    B: { pbs:[640, 886.36],   out:[[685, 912.36], [600, 956.59]] }
+  };
   var DOTS_PER_UNIT = { 0:0, 0.001:0.03, 0.01:0.08, 0.1:0.2 };
+  function segLen(p, q){ return Math.hypot(q[0] - p[0], q[1] - p[1]); }
+  // a dot at distance d from p toward q, nudged sideways by off
+  function dotAt(p, q, d, off, r){
+    var len = segLen(p, q), ux = (q[0] - p[0]) / len, uy = (q[1] - p[1]) / len;
+    return '<circle cx="' + (p[0] + ux*d - uy*off).toFixed(1) + '" cy="' + (p[1] + uy*d + ux*off).toFixed(1) + '" r="' + r.toFixed(2) + '"></circle>';
+  }
   function scatterPhotons(){
     var g = $('sp-photons');
     if (!g) return;
-    var density = DOTS_PER_UNIT[sp.gen] || 0, html = '';
-    var dot = function(seg, t, off, r){
-      var dx = seg[2] - seg[0], dy = seg[3] - seg[1], len = Math.sqrt(dx*dx + dy*dy);
-      return '<circle cx="' + (seg[0] + dx*t - dy/len*off).toFixed(1) + '" cy="' + (seg[1] + dy*t + dx/len*off).toFixed(1) + '" r="' + r.toFixed(2) + '"></circle>';
-    };
-    PHOTON_PAIRS.forEach(function(pair){
-      var up = pair[0], len = Math.hypot(up[2] - up[0], up[3] - up[1]), n = poisson(density * len);
-      for (var i = 0; i < n; i++){
-        var t = Math.random(), off = (Math.random() - 0.5) * 3, r = 1.5 + Math.random() * 1.3;
-        // the lower arm runs mirrored, so its perpendicular offset flips sign
-        html += dot(pair[0], t, off, r) + dot(pair[1], t, -off, r);
-      }
-    });
+    var density = DOTS_PER_UNIT[sp.gen] || 0, html = '', i, off, r, d;
+    // before the beam splitters: identical (mirrored) dots on both arms
+    var pre = segLen(CRYSTAL, ARMS.A.pbs);
+    for (i = poisson(density * pre); i > 0; i--){
+      d = Math.random() * pre; off = (Math.random() - 0.5) * 3; r = 1.5 + Math.random() * 1.3;
+      html += dotAt(CRYSTAL, ARMS.A.pbs, d, off, r) + dotAt(CRYSTAL, ARMS.B.pbs, d, -off, r);
+    }
+    // after: route each pair by a jointly sampled outcome
+    var m = model(), keys = ['00','01','10','11'];
+    var post = Math.max(segLen(ARMS.A.pbs, ARMS.A.out[0]), segLen(ARMS.A.pbs, ARMS.A.out[1]));
+    for (i = poisson(density * post); i > 0; i--){
+      var u = Math.random(), acc = 0, k = keys[3];
+      for (var j = 0; j < 4; j++){ acc += m.trAB[keys[j]]; if (u < acc){ k = keys[j]; break; } }
+      d = Math.random() * post; off = (Math.random() - 0.5) * 3; r = 1.5 + Math.random() * 1.3;
+      [['A', +k.charAt(0), off], ['B', +k.charAt(1), -off]].forEach(function(x){
+        var arm = ARMS[x[0]], end = arm.out[x[1]];
+        if (d <= segLen(arm.pbs, end)) html += dotAt(arm.pbs, end, d, x[2], r);   // shorter leg: dot has already left it
+      });
+    }
     g.innerHTML = html;
   }
 
