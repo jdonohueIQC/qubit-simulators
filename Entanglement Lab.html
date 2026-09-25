@@ -393,6 +393,54 @@
   #domain-braket .trace-row:last-child{ margin-bottom:0; }
   #domain-braket .trace-label{ color:var(--ink-soft); font-weight:700; flex-shrink:0; width:62px; }
   #domain-braket .trace-step .katex{ font-size:1.05em; }
+
+  /* ============================= SPDC ============================= */
+  #domain-spdc .sp-diagram-placeholder{ display:flex; align-items:center; justify-content:center; min-height:110px;
+    color:var(--ink-soft); font:600 13px var(--sans); border-style:dashed; }
+  #domain-spdc .sp-meas-card{ flex:1 1 220px; }
+  #domain-spdc .sp-source-card{ flex:1.3 1 300px; border-color:var(--wave-top); }
+  #domain-spdc .sp-grid{ display:grid; gap:5px; margin-bottom:5px; }
+  #domain-spdc .sp-grid.c2{ grid-template-columns:repeat(2,1fr); }
+  #domain-spdc .sp-grid.c3{ grid-template-columns:repeat(3,1fr); }
+  #domain-spdc .sp-grid.c4{ grid-template-columns:repeat(4,1fr); }
+  #domain-spdc .sp-grid .quick-btn{ padding:6px 2px; font-size:12px; }
+  #domain-spdc .sp-grid .quick-btn.wide{ grid-column:1/-1; }
+  #domain-spdc .sp-grid.fracs .quick-btn{ padding:2px; overflow:hidden; }
+  #domain-spdc .quick-btn .katex{ pointer-events:none; }
+  #domain-spdc .sp-card-sub{ font-size:12px; color:var(--ink-soft); margin:-4px 0 9px; min-height:1.3em; }
+  #domain-spdc .sp-params{ flex:1 1 100%; }
+  #domain-spdc .sp-param-grid{ display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:14px 20px; }
+  #domain-spdc .sp-param-name{ font:700 11px var(--sans); color:var(--ink-soft); text-transform:uppercase; letter-spacing:.03em; margin-bottom:6px; }
+  #domain-spdc .sp-sym{ font-family:var(--serif); font-style:italic; text-transform:none; color:var(--crimson); font-size:12.5px; letter-spacing:0; }
+  #domain-spdc .sp-sub{ font:400 11px var(--sans); color:var(--ink-soft); text-transform:none; letter-spacing:0; }
+  #domain-spdc .sp-param-val{ font:700 15px var(--sans); color:var(--ink); }
+  #domain-spdc .sp-locked{ color:var(--ink-soft); }
+  #domain-spdc .sp-stepper{ display:flex; align-items:center; gap:10px; }
+  #domain-spdc .sp-stepper .btn{ padding:4px 12px; font-size:15px; line-height:1.1; }
+  #domain-spdc .sp-stepper .sp-param-val{ min-width:28px; text-align:center; }
+  #domain-spdc .sp-results{ display:flex; flex-wrap:wrap; gap:16px; margin-top:16px; align-items:flex-start; }
+  #domain-spdc .sp-stats{ flex:1 1 300px; margin-top:0; grid-template-columns:repeat(2,1fr); }
+  #domain-spdc .sp-card{ border:1px solid var(--line); border-radius:8px; padding:10px 12px 12px; background:#fdfcfa; }
+  :root[data-theme="dark"] #domain-spdc .sp-card{ background:#2a2825; }
+  #domain-spdc .sp-card-title{ font:700 10.5px var(--sans); text-transform:uppercase; letter-spacing:.03em; color:var(--ink-soft); margin-bottom:8px; }
+  #domain-spdc .sp-table{ border-collapse:separate; border-spacing:5px; margin:-5px; }
+  #domain-spdc .sp-table th{ font:700 11px var(--sans); color:var(--ink-soft); padding:0 6px; white-space:nowrap; }
+  #domain-spdc .sp-table th.row-h{ text-align:right; }
+  #domain-spdc .sp-cell{ min-width:96px; text-align:center; font-family:var(--display); font-size:22px; font-weight:700; color:var(--crimson);
+    padding:6px 8px; border:1px solid var(--line); border-radius:6px; background:#fff; white-space:nowrap; }
+  :root[data-theme="dark"] #domain-spdc .sp-cell{ background:#242220; }
+  #domain-spdc .sp-cell.agree{ background:#eaf1fa; }
+  :root[data-theme="dark"] #domain-spdc .sp-cell.agree{ background:#1f2c3a; }
+  @keyframes sp-cell-flash { 0% { box-shadow:0 0 0 0 rgba(47,143,91,0); } 30% { box-shadow:0 0 0 4px rgba(47,143,91,0.5); } 100% { box-shadow:0 0 0 0 rgba(47,143,91,0); } }
+  #domain-spdc .sp-cell.flash{ animation: sp-cell-flash 600ms ease-out 1; }
+  #domain-spdc .sp-status{ font-size:13px; color:var(--ink-soft); min-height:1.3em; margin-top:14px; }
+  #domain-spdc .sp-math-block{ margin-bottom:14px; }
+  #domain-spdc .sp-math-block h4{ font:700 12.5px var(--sans); text-transform:uppercase; letter-spacing:.03em; margin:0 0 6px; }
+  #domain-spdc .sp-math-table{ border-collapse:collapse; font-size:12.5px; margin-top:6px; }
+  #domain-spdc .sp-math-table th, #domain-spdc .sp-math-table td{ border:1px solid var(--line); padding:5px 9px; text-align:right; white-space:nowrap; }
+  #domain-spdc .sp-math-table th{ background:var(--paper); font-weight:700; color:var(--ink-soft); }
+  #domain-spdc .sp-math-table td:first-child, #domain-spdc .sp-math-table th:first-child{ text-align:left; }
+  #domain-spdc .sp-math-scroll{ overflow-x:auto; }
 </style>
 </head>
 <body>
@@ -711,10 +759,93 @@
   <!-- ============================= SPDC (placeholder) ============================= -->
   <section id="domain-spdc" class="domain-panel">
     <div class="panel">
-      <div class="coming-soon">
-        <h2>SPDC Mode</h2>
-        <p>The physical setup behind the abstraction: a pump laser, a nonlinear crystal, and spontaneous parametric down-conversion generating the entangled pairs used above. Coming soon.</p>
+
+      <div class="diagram-wrap sp-diagram-placeholder">
+        <div>SPDC setup diagram &#8212; coming soon</div>
       </div>
+
+      <div class="control-row" id="sp-controls"></div>
+
+      <div class="control-row">
+        <div class="polarizer-control sp-params">
+          <h3>Experimental Parameters</h3>
+          <div class="sp-param-grid">
+            <div class="sp-param">
+              <div class="sp-param-name">Pulse rate <span class="sp-sym">R</span></div>
+              <div class="sp-param-val sp-locked" title="Fixed for this laser">80 MHz &nbsp;<span class="sp-sub">(80,000,000 pulses/s)</span> &#128274;</div>
+            </div>
+            <div class="sp-param">
+              <div class="sp-param-name">Pair generation probability <span class="sp-sym">gen</span> <span class="sp-sub">(per pulse)</span></div>
+              <div class="mode-switch small" id="sp-gen-switch">
+                <button data-gen="0.1">0.1</button>
+                <button data-gen="0.01" class="active">0.01</button>
+                <button data-gen="0.001">0.001</button>
+                <button data-gen="0">0</button>
+              </div>
+            </div>
+            <div class="sp-param">
+              <div class="sp-param-name">Detector efficiency <span class="sp-sym">eff</span></div>
+              <div class="sp-stepper">
+                <button class="btn" id="sp-eff-down" aria-label="Decrease efficiency">&#8722;</button>
+                <span class="sp-param-val" id="sp-eff-val">0.2</span>
+                <button class="btn" id="sp-eff-up" aria-label="Increase efficiency">+</button>
+              </div>
+            </div>
+            <div class="sp-param">
+              <div class="sp-param-name">Dark-count probability <span class="sp-sym">dark</span> <span class="sp-sub">(per pulse)</span></div>
+              <div class="sp-param-val" id="sp-dark-val">0.00025</div>
+              <div class="sp-sub" id="sp-dark-note">Room lights on &#8212; switch to Dark mode to turn them off</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="beam-controls">
+        <div class="btn-row">
+          <button class="btn primary" id="sp-auto">&#9654; Auto</button>
+          <button class="btn" id="sp-run">Run 1s</button>
+          <button class="btn" id="sp-show-prob">Show Probabilities</button>
+          <button class="btn" id="sp-reset">Reset</button>
+        </div>
+        <div class="btn-row">
+          <div class="mode-switch small prob-source-switch" id="sp-prob-source" title="Sampled counts from the last second (Data) or the expected rates from theory (Theory)">
+            <button data-src="data" class="active">Data</button>
+            <button data-src="theory">Theory</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="sp-results">
+        <div class="sp-card">
+          <div class="sp-card-title" id="sp-singles-title">Singles (counts/s)</div>
+          <table class="sp-table">
+            <tr><th>Alice 0</th><th>Alice 1</th><th>Bob 0</th><th>Bob 1</th></tr>
+            <tr><td class="sp-cell" id="sp-s-A0">&#8212;</td><td class="sp-cell" id="sp-s-A1">&#8212;</td><td class="sp-cell" id="sp-s-B0">&#8212;</td><td class="sp-cell" id="sp-s-B1">&#8212;</td></tr>
+          </table>
+        </div>
+        <div class="sp-card">
+          <div class="sp-card-title" id="sp-joint-title">Coincidences (counts/s)</div>
+          <table class="sp-table">
+            <tr><th></th><th>Bob 0</th><th>Bob 1</th></tr>
+            <tr><th class="row-h">Alice 0</th><td class="sp-cell agree" id="sp-j-00">&#8212;</td><td class="sp-cell" id="sp-j-01">&#8212;</td></tr>
+            <tr><th class="row-h">Alice 1</th><td class="sp-cell" id="sp-j-10">&#8212;</td><td class="sp-cell agree" id="sp-j-11">&#8212;</td></tr>
+          </table>
+        </div>
+        <div class="stats-grid sp-stats">
+          <div class="stat-box"><div class="num" id="sp-stat-coinc">&#8212;</div><div class="lbl">Total Coincidences/s</div></div>
+          <div class="stat-box"><div class="num" id="sp-stat-agree">&#8212;</div><div class="lbl">Agree/s</div></div>
+          <div class="stat-box"><div class="num" id="sp-stat-disagree">&#8212;</div><div class="lbl">Disagree/s</div></div>
+          <div class="stat-box"><div class="num" id="sp-stat-corr">&#8212;</div><div class="lbl">Correlation E</div></div>
+        </div>
+      </div>
+
+      <div class="sp-status" id="sp-status"></div>
+
+      <details class="math-trace-details">
+        <summary class="math-trace-summary">Detection probabilities and count rates</summary>
+        <div class="math-trace" id="sp-math"></div>
+      </details>
+
     </div>
   </section>
 
@@ -2286,6 +2417,287 @@
 
   defaultSetup();
   rebuildEverything();
+})();
+</script>
+<!-- ============================= SPDC SCRIPT ============================= -->
+<script>
+(function(){
+  "use strict";
+  var root = document.getElementById('domain-spdc');
+  function $(id){ return document.getElementById(id); }
+
+  // ---------------- complex / kets ----------------
+  function cx(re, im){ return { re: re, im: im || 0 }; }
+  function cadd(a,b){ return cx(a.re+b.re, a.im+b.im); }
+  function cmul(a,b){ return cx(a.re*b.re - a.im*b.im, a.re*b.im + a.im*b.re); }
+  function cconj(a){ return cx(a.re, -a.im); }
+  function cabs2(a){ return a.re*a.re + a.im*a.im; }
+  var C0 = cx(0), C1 = cx(1), S = Math.SQRT1_2;
+  var C8 = Math.cos(Math.PI/8), S8 = Math.sin(Math.PI/8);
+  // Same conventions as the Bra-Ket tab: 0 = H, 1 = V, |+i> = (|0> + i|1>)/sqrt2.
+  var KETS = {
+    '0':[C1,C0], '1':[C0,C1], '+':[cx(S),cx(S)], '-':[cx(S),cx(-S)],
+    '+_i':[cx(S),cx(0,S)], '-_i':[cx(S),cx(0,-S)],
+    w0:[cx(C8),cx(S8)], w1:[cx(-S8),cx(C8)], v0:[cx(C8),cx(-S8)], v1:[cx(S8),cx(C8)]
+  };
+  var BASIS_KETS = { Z:['0','1'], X:['+','-'], Y:['+_i','-_i'], W:['w0','w1'], V:['v0','v1'] };
+  var BASIS_NAME = { Z:'Z', X:'X', Y:'Y', W:'(Z+X)/√2', V:'(Z−X)/√2' };
+  var BASIS_TEX = { Z:'Z', X:'X', Y:'Y', W:'\\dfrac{Z+X}{\\sqrt{2}}', V:'\\dfrac{Z-X}{\\sqrt{2}}' };
+  var KET_LABEL = { w0:'0_{W}', w1:'1_{W}', v0:'0_{V}', v1:'1_{V}' };
+  var KERN = '\\mkern-1mu';
+  function ketTex(sym){ return '\\bigl|' + KERN + sym + '\\bigr\\rangle'; }
+  function projTex(sym){ return '\\bigl|' + KERN + sym + '\\bigr\\rangle\\bigl\\langle' + sym + KERN + '\\bigr|'; }
+  function outKetTex(sym){ return ketTex(KET_LABEL[sym] || sym); }
+
+  // ---------------- source states (as mixtures of pure kets) ----------------
+  function kron(a, b){ return [cmul(a[0],b[0]), cmul(a[0],b[1]), cmul(a[1],b[0]), cmul(a[1],b[1])]; }
+  var STATES = {
+    psi_minus: { tex: ketTex('\\Psi^{-}'), formula:'\\tfrac{1}{\\sqrt{2}}\\bigl(' + ketTex('01') + '-' + ketTex('10') + '\\bigr)', mix:[{ w:1, psi:[C0, cx(S), cx(-S), C0] }] },
+    psi_plus:  { tex: ketTex('\\Psi^{+}'), formula:'\\tfrac{1}{\\sqrt{2}}\\bigl(' + ketTex('01') + '+' + ketTex('10') + '\\bigr)', mix:[{ w:1, psi:[C0, cx(S), cx(S), C0] }] },
+    phi_minus: { tex: ketTex('\\Phi^{-}'), formula:'\\tfrac{1}{\\sqrt{2}}\\bigl(' + ketTex('00') + '-' + ketTex('11') + '\\bigr)', mix:[{ w:1, psi:[cx(S), C0, C0, cx(-S)] }] },
+    phi_plus:  { tex: ketTex('\\Phi^{+}'), formula:'\\tfrac{1}{\\sqrt{2}}\\bigl(' + ketTex('00') + '+' + ketTex('11') + '\\bigr)', mix:[{ w:1, psi:[cx(S), C0, C0, cx(S)] }] },
+    mixed:     { tex: '\\rho_{\\text{corr}}', formula:'\\tfrac{1}{2}\\bigl(' + projTex('00') + '+' + projTex('11') + '\\bigr)',
+                 mix:[{ w:0.5, psi:[C1, C0, C0, C0] }, { w:0.5, psi:[C0, C0, C0, C1] }] }
+  };
+  var PROD_ROWS = [['00','01','10','11'], ['++','+-','-+','--']];
+  PROD_ROWS.forEach(function(row){ row.forEach(function(k){
+    STATES['prod_' + k] = { tex: ketTex('{' + k.charAt(0) + '}{' + k.charAt(1) + '}'),
+      formula: ketTex(k.charAt(0)) + '\\otimes' + ketTex(k.charAt(1)),
+      mix:[{ w:1, psi: kron(KETS[k.charAt(0)], KETS[k.charAt(1)]) }] };
+  }); });
+  var BELL_ORDER = ['psi_minus','psi_plus','phi_minus','phi_plus'];
+
+  // Tr[(Pa (x) Pb) rho], where either projector may be the identity (null).
+  function trProj(stateKey, ka, kb){
+    var total = 0;
+    STATES[stateKey].mix.forEach(function(c){
+      var psi = c.psi, sub = 0, amp, x, y, o;
+      if (ka && kb){
+        amp = C0;
+        for (x = 0; x < 2; x++) for (y = 0; y < 2; y++) amp = cadd(amp, cmul(cmul(cconj(ka[x]), cconj(kb[y])), psi[2*x + y]));
+        sub = cabs2(amp);
+      } else if (ka){        // sum over Bob's computational basis
+        for (o = 0; o < 2; o++){ amp = C0; for (x = 0; x < 2; x++) amp = cadd(amp, cmul(cconj(ka[x]), psi[2*x + o])); sub += cabs2(amp); }
+      } else {               // sum over Alice's computational basis
+        for (o = 0; o < 2; o++){ amp = C0; for (y = 0; y < 2; y++) amp = cadd(amp, cmul(cconj(kb[y]), psi[2*o + y])); sub += cabs2(amp); }
+      }
+      total += c.w * sub;
+    });
+    return total;
+  }
+
+  // ---------------- detection model (from the Mathematica notebook) ----------------
+  var PULSE_RATE = 80e6;
+  function darkP(){ return document.documentElement.getAttribute('data-theme') === 'dark' ? 0.000005 : 0.00025; }
+  // Per-pulse click probabilities for Alice's detector a, Bob's detector b and
+  // their coincidence, exactly as PrA / PrB / PrAB in the notebook.
+  function model(){
+    var d = darkP(), eff = sp.eff, gen = sp.gen, kA = BASIS_KETS[sp.bases.A], kB = BASIS_KETS[sp.bases.B];
+    var out = { dark:d, A:[], B:[], As:[], Bs:[], AB:{}, coin:{}, trA:[], trB:[], trAB:{} };
+    for (var a = 0; a < 2; a++){
+      out.trA[a] = trProj(sp.state, KETS[kA[a]], null);
+      out.As[a] = eff * gen * out.trA[a];
+      out.A[a] = 1 - (1 - d) * (1 - out.As[a]);
+      out.trB[a] = trProj(sp.state, null, KETS[kB[a]]);
+      out.Bs[a] = eff * gen * out.trB[a];
+      out.B[a] = 1 - (1 - d) * (1 - out.Bs[a]);
+    }
+    for (var i = 0; i < 2; i++) for (var j = 0; j < 2; j++){
+      var k = '' + i + j;
+      out.trAB[k] = trProj(sp.state, KETS[kA[i]], KETS[kB[j]]);
+      out.coin[k] = eff * eff * gen * out.trAB[k];
+      out.AB[k] = 1 - (1 - d*d) * (1 - d * out.As[i]) * (1 - d * out.Bs[j]) * (1 - out.As[i] * out.Bs[j]) * (1 - out.coin[k]);
+    }
+    return out;
+  }
+  function expectedRates(){
+    var m = model(), r = { A:[], B:[], AB:{} };
+    for (var a = 0; a < 2; a++){ r.A[a] = PULSE_RATE * m.A[a]; r.B[a] = PULSE_RATE * m.B[a]; }
+    ['00','01','10','11'].forEach(function(k){ r.AB[k] = PULSE_RATE * m.AB[k]; });
+    return r;
+  }
+  // Poisson sampler: exact (Knuth) for small means, normal approximation above.
+  function gauss(){ var u = 1 - Math.random(), v = Math.random(); return Math.sqrt(-2*Math.log(u)) * Math.cos(2*Math.PI*v); }
+  function poisson(lambda){
+    if (lambda <= 0) return 0;
+    if (lambda < 60){
+      var L = Math.exp(-lambda), k = 0, p = 1;
+      do { k++; p *= Math.random(); } while (p > L);
+      return k - 1;
+    }
+    return Math.max(0, Math.round(lambda + Math.sqrt(lambda) * gauss()));
+  }
+  function sampleSecond(){
+    var r = expectedRates(), c = { A:[], B:[], AB:{} };
+    for (var a = 0; a < 2; a++){ c.A[a] = poisson(r.A[a]); c.B[a] = poisson(r.B[a]); }
+    ['00','01','10','11'].forEach(function(k){ c.AB[k] = poisson(r.AB[k]); });
+    return c;
+  }
+
+  // ---------------- state ----------------
+  var EFF_STEPS = [0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0];
+  var sp, data = null, showProb = false, probSource = 'data', auto = false, timer = null;
+  function defaults(){ sp = { state:'psi_minus', bases:{ A:'Z', B:'Z' }, eff:0.2, gen:0.01 }; }
+
+  // ---------------- KaTeX ----------------
+  function katexSpan(tex){ return '<span class="katex-src" data-tex="' + tex.replace(/"/g, '&quot;') + '"></span>'; }
+  function renderKatexIn(el){
+    el.querySelectorAll('.katex-src').forEach(function(n){
+      try { katex.render(n.getAttribute('data-tex'), n, { throwOnError:false }); } catch (e){ n.textContent = n.getAttribute('data-tex'); }
+    });
+  }
+
+  // ---------------- settings cards ----------------
+  function measCard(side){
+    var name = side === 'A' ? 'Alice' : 'Bob';
+    var btn = function(b){
+      return '<button class="quick-btn' + (sp.bases[side] === b ? ' active' : '') + '" data-sp-side="' + side + '" data-sp-basis="' + b + '" title="Measure in the ' + BASIS_NAME[b] + ' basis">' + katexSpan(BASIS_TEX[b]) + '</button>';
+    };
+    var k = BASIS_KETS[sp.bases[side]];
+    return '<div class="polarizer-control sp-meas-card"><h3>' + name + '’s Measurement</h3>' +
+      '<div class="sp-card-sub">' + katexSpan('0\\to' + outKetTex(k[0]) + ',\\ \\ 1\\to' + outKetTex(k[1])) + '</div>' +
+      '<div class="sp-grid c3">' + ['Z','X','Y'].map(btn).join('') + '</div>' +
+      '<div class="sp-grid c2 fracs">' + ['W','V'].map(btn).join('') + '</div></div>';
+  }
+  function sourceCard(){
+    var b = function(k, wide, title){
+      return '<button class="quick-btn source-btn' + (wide ? ' wide' : '') + (sp.state === k ? ' active' : '') + '" data-sp-state="' + k + '"' + (title ? ' title="' + title + '"' : '') + '>' + katexSpan(STATES[k].tex) + '</button>';
+    };
+    return '<div class="polarizer-control sp-source-card"><h3>Source</h3>' +
+      '<div class="sp-card-sub">' + katexSpan(STATES[sp.state].tex + (STATES[sp.state].tex === STATES[sp.state].formula ? '' : '=' + STATES[sp.state].formula)) + '</div>' +
+      PROD_ROWS.map(function(row){ return '<div class="sp-grid c4">' + row.map(function(p){ return b('prod_' + p, false, 'Separable state'); }).join('') + '</div>'; }).join('') +
+      '<div class="sp-grid c4">' + BELL_ORDER.map(function(k){ return b(k); }).join('') + '</div>' +
+      '<div class="sp-grid c2">' + b('mixed', true, 'Classically correlated mixed state (not entangled)') + '</div></div>';
+  }
+  function renderControls(){
+    var row = $('sp-controls');
+    row.innerHTML = measCard('A') + sourceCard() + measCard('B');
+    renderKatexIn(row);
+    row.querySelectorAll('[data-sp-basis]').forEach(function(btn){
+      btn.addEventListener('click', function(){ sp.bases[btn.getAttribute('data-sp-side')] = btn.getAttribute('data-sp-basis'); settingsChanged(); });
+    });
+    row.querySelectorAll('[data-sp-state]').forEach(function(btn){
+      btn.addEventListener('click', function(){ sp.state = btn.getAttribute('data-sp-state'); settingsChanged(); });
+    });
+  }
+  function renderParams(){
+    root.querySelectorAll('#sp-gen-switch button').forEach(function(b){ b.classList.toggle('active', Number(b.getAttribute('data-gen')) === sp.gen); });
+    $('sp-eff-val').textContent = sp.eff.toFixed(1);
+    $('sp-eff-down').disabled = sp.eff <= EFF_STEPS[0] + 1e-9;
+    $('sp-eff-up').disabled = sp.eff >= EFF_STEPS[EFF_STEPS.length - 1] - 1e-9;
+    var dark = darkP();
+    $('sp-dark-val').textContent = dark === 0.00025 ? '0.00025' : '0.000005';
+    $('sp-dark-note').textContent = dark === 0.00025
+      ? 'Room lights on — switch the page to Dark mode to turn them off'
+      : 'Room lights off (Dark mode) — far fewer stray photons';
+  }
+
+  // ---------------- results ----------------
+  function fmt(n){ return n.toLocaleString('en-US', { maximumFractionDigits: n < 100 ? 1 : 0 }); }
+  function fmtE(e){ return (e > 0 ? '+' : e < 0 ? '−' : '') + Math.abs(e).toFixed(2); }
+  function flash(id){ var c = $(id); c.classList.remove('flash'); void c.offsetWidth; c.classList.add('flash'); }
+  function renderResults(flashCells){
+    var theory = showProb && probSource === 'theory';
+    var v = theory ? expectedRates() : data;
+    var set = function(id, x){ $(id).textContent = v ? fmt(x) : '—'; if (flashCells && v) flash(id); };
+    set('sp-s-A0', v && v.A[0]); set('sp-s-A1', v && v.A[1]); set('sp-s-B0', v && v.B[0]); set('sp-s-B1', v && v.B[1]);
+    ['00','01','10','11'].forEach(function(k){ set('sp-j-' + k, v && v.AB[k]); });
+    var suffix = theory ? ' (expected counts/s)' : ' (counts/s)';
+    $('sp-singles-title').textContent = 'Singles' + suffix;
+    $('sp-joint-title').textContent = 'Coincidences' + suffix;
+    if (!v){ ['sp-stat-coinc','sp-stat-agree','sp-stat-disagree','sp-stat-corr'].forEach(function(id){ $(id).textContent = '—'; }); return; }
+    var agree = v.AB['00'] + v.AB['11'], disagree = v.AB['01'] + v.AB['10'], tot = agree + disagree;
+    $('sp-stat-coinc').textContent = fmt(tot);
+    $('sp-stat-agree').textContent = fmt(agree);
+    $('sp-stat-disagree').textContent = fmt(disagree);
+    $('sp-stat-corr').textContent = tot > 0 ? fmtE((agree - disagree) / tot) : '—';
+  }
+
+  // ---------------- math panel ----------------
+  function sci(x){
+    if (x === 0) return '0';
+    if (x >= 0.001) return x.toPrecision(4).replace(/\.?0+$/, '');
+    var e = Math.floor(Math.log10(x)), m = x / Math.pow(10, e);
+    return m.toFixed(3).replace(/\.?0+$/, '') + '×10<sup>' + e + '</sup>';
+  }
+  function renderMath(){
+    var m = model(), r = expectedRates(), kA = BASIS_KETS[sp.bases.A], kB = BASIS_KETS[sp.bases.B];
+    var rows = '';
+    for (var a = 0; a < 2; a++) rows += '<tr><td>Alice ' + a + ' ' + katexSpan(outKetTex(kA[a])) + '</td><td>' + sci(m.trA[a]) + '</td><td>' + sci(m.As[a]) + '</td><td>' + sci(m.A[a]) + '</td><td>' + fmt(r.A[a]) + '</td></tr>';
+    for (var b = 0; b < 2; b++) rows += '<tr><td>Bob ' + b + ' ' + katexSpan(outKetTex(kB[b])) + '</td><td>' + sci(m.trB[b]) + '</td><td>' + sci(m.Bs[b]) + '</td><td>' + sci(m.B[b]) + '</td><td>' + fmt(r.B[b]) + '</td></tr>';
+    var crow = '';
+    ['00','01','10','11'].forEach(function(k){
+      crow += '<tr><td>Alice ' + k.charAt(0) + ', Bob ' + k.charAt(1) + '</td><td>' + sci(m.trAB[k]) + '</td><td>' + sci(m.coin[k]) + '</td><td>' + sci(m.AB[k]) + '</td><td>' + fmt(r.AB[k]) + '</td></tr>';
+    });
+    var html =
+      '<div class="sp-math-block"><h4>Source</h4>' + katexSpan(STATES[sp.state].tex + (STATES[sp.state].tex === STATES[sp.state].formula ? '' : '=' + STATES[sp.state].formula)) +
+        '&nbsp;&nbsp; pulse rate <i>R</i> = 8×10<sup>7</sup>/s, <i>gen</i> = ' + sp.gen + ', <i>eff</i> = ' + sp.eff.toFixed(1) + ', <i>dark</i> = ' + m.dark + '</div>' +
+      '<div class="sp-math-block"><h4>Singles (per pulse)</h4>' +
+        katexSpan('P_A^{\\text{sig}}=\\mathit{eff}\\cdot\\mathit{gen}\\cdot\\mathrm{Tr}\\!\\left[(\\Pi_a\\otimes I)\\,\\rho\\right],\\qquad P_A=1-(1-\\mathit{dark})\\,(1-P_A^{\\text{sig}})') + ' &nbsp;(same for Bob with <i>I</i>&#8202;&#8855;&#8202;&Pi;<sub>b</sub>)' +
+        '<div class="sp-math-scroll"><table class="sp-math-table"><tr><th>Detector</th><th>Tr[&Pi; &rho;]</th><th>P<sup>sig</sup></th><th>P (with dark)</th><th>Expected counts/s</th></tr>' + rows + '</table></div></div>' +
+      '<div class="sp-math-block"><h4>Coincidences (per pulse)</h4>' +
+        katexSpan('P_{AB}^{\\text{pair}}=\\mathit{eff}^{\\,2}\\,\\mathit{gen}\\,\\mathrm{Tr}\\!\\left[(\\Pi_a\\otimes\\Pi_b)\\,\\rho\\right]') + '<br>' +
+        katexSpan('P_{AB}=1-(1-\\mathit{dark}^2)(1-\\mathit{dark}\\,P_A^{\\text{sig}})(1-\\mathit{dark}\\,P_B^{\\text{sig}})(1-P_A^{\\text{sig}}P_B^{\\text{sig}})(1-P_{AB}^{\\text{pair}})') +
+        '<div class="sp-math-scroll"><table class="sp-math-table"><tr><th>Outcome</th><th>Tr[(&Pi;&#8855;&Pi;) &rho;]</th><th>P<sup>pair</sup></th><th>P<sub>AB</sub></th><th>Expected counts/s</th></tr>' + crow + '</table></div>' +
+        '<div class="trace-note">Counts in each 1-second window are Poisson-distributed with mean <i>R</i>&#8202;&middot;&#8202;<i>P</i>. The extra factors in <i>P</i><sub>AB</sub> are accidental coincidences: a dark count on both sides, a dark count plus a real photon, or photons from two different pairs landing in the same pulse. Correlation <i>E</i> is computed from all coincidences, accidentals included, so noise pulls it toward 0.</div></div>';
+    var el = $('sp-math');
+    el.innerHTML = html;
+    renderKatexIn(el);
+  }
+
+  // ---------------- actions ----------------
+  function status(t){ $('sp-status').textContent = t; }
+  function idleStatus(){ status(auto ? 'Auto — collecting a fresh second of data every second.' : 'Click “Auto” to collect counts every second, or “Run 1s” for a single second of data.'); }
+  function runOnce(){
+    data = sampleSecond();
+    renderResults(true);
+    var t = new Date();
+    status((auto ? 'Auto — ' : '') + '1 s of data (80,000,000 pulses) collected at ' + t.toLocaleTimeString() + '.');
+  }
+  function settingsChanged(){
+    data = null;             // counts belong to the old settings
+    renderControls(); renderParams(); renderResults(false); renderMath(); idleStatus();
+  }
+  function setAuto(on){
+    auto = on;
+    $('sp-auto').innerHTML = on ? '&#9208; Pause' : '&#9654; Auto';
+    $('sp-run').disabled = on;
+    clearInterval(timer);
+    if (on){ runOnce(); timer = setInterval(runOnce, 1000); }
+    else idleStatus();
+  }
+  $('sp-auto').addEventListener('click', function(){ setAuto(!auto); });
+  $('sp-run').addEventListener('click', runOnce);
+  $('sp-show-prob').addEventListener('click', function(){
+    showProb = !showProb;
+    $('sp-show-prob').textContent = showProb ? 'Show Counts' : 'Show Probabilities';
+    $('sp-show-prob').classList.toggle('toggle-on', showProb);
+    $('sp-prob-source').classList.toggle('shown', showProb);
+    renderResults(false);
+  });
+  root.querySelectorAll('#sp-prob-source button').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      probSource = btn.getAttribute('data-src');
+      root.querySelectorAll('#sp-prob-source button').forEach(function(b){ b.classList.toggle('active', b === btn); });
+      renderResults(false);
+    });
+  });
+  $('sp-reset').addEventListener('click', function(){ setAuto(false); defaults(); settingsChanged(); });
+  root.querySelectorAll('#sp-gen-switch button').forEach(function(btn){
+    btn.addEventListener('click', function(){ sp.gen = Number(btn.getAttribute('data-gen')); settingsChanged(); });
+  });
+  function stepEff(dir){
+    var i = Math.round(sp.eff * 10) - 1 + dir;
+    if (i < 0 || i >= EFF_STEPS.length) return;
+    sp.eff = EFF_STEPS[i]; settingsChanged();
+  }
+  $('sp-eff-down').addEventListener('click', function(){ stepEff(-1); });
+  $('sp-eff-up').addEventListener('click', function(){ stepEff(1); });
+  // The dark-count rate follows the page theme ("room lights" on/off).
+  new MutationObserver(function(){ settingsChanged(); }).observe(document.documentElement, { attributes:true, attributeFilter:['data-theme'] });
+
+  defaults();
+  settingsChanged();
 })();
 </script>
 </body>
