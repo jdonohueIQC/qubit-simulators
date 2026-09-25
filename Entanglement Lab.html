@@ -14,6 +14,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" integrity="sha384-n8MVd4RsNIU0tAv4ct0nTaAbDJwPJzDEaqSD1odI+WdtXRGWt2kTvGFasHpSy3SV" crossorigin="anonymous">
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js" integrity="sha384-XjKyOOlGwcjNTAIQHIpgOno0Hl1YQqzUOEleOLALmuqehneUG+vnGctmUb0ZY0l8" crossorigin="anonymous"></script>
 
 <style>
   :root{
@@ -169,7 +171,8 @@
     background:#fff; color:var(--ink); cursor:pointer; text-align:center; }
   :root[data-theme="dark"] .quick-btn{ background:#242220; }
   .quick-btn:hover{ background: var(--crimson-tint); }
-  .quick-btn.active{ background: var(--crimson); border-color: var(--crimson); color:#fff; }
+  .quick-btn.active,
+  :root[data-theme="dark"] .quick-btn.active{ background: var(--crimson); border-color: var(--crimson); color:#fff; }
   .quick-btn.source-btn{ font-family:var(--serif); font-style:italic; font-size:13px; }
 
   .beam-controls{ display:flex; align-items:center; justify-content:space-between; gap:14px; flex-wrap:wrap;
@@ -220,6 +223,139 @@
     h1{ font-size:26px; }
     .diagram-inner{ width:900px; }
   }
+
+  /* ============================= BRA-KET ============================= */
+  /* Mirrors the Superposition Lab's Bra-Ket Build mode (HTML/KaTeX nodes,
+     not SVG), folded outward from a central entangled source: Alice's
+     chain runs right-to-left, Bob's left-to-right. Node width (140px) and
+     connector width (56px) are shared with the controls row below so each
+     settings card sits directly under its diagram element. */
+  #domain-braket .bk-diagram-inner{ width:max-content; margin:0 auto; }
+  #domain-braket .bk-diagram{ display:flex; align-items:flex-start; padding:16px 84px 6px; position:relative; }
+  #domain-braket .bk-node{ flex:0 0 140px; width:140px; display:flex; flex-direction:column; align-items:center; position:relative; z-index:2; }
+  #domain-braket .bk-node-title{ font:700 12px var(--sans); color:var(--ink-soft); text-transform:uppercase; letter-spacing:.03em; margin-bottom:9px; height:14px; white-space:nowrap; }
+  #domain-braket .bk-box{ width:84px; height:84px; border-radius:13px; display:flex; align-items:center; justify-content:center; font-size:19px; position:relative; }
+  #domain-braket .bk-box.source-box{ background:#fff; border:2px solid var(--wave-top); color:var(--wave-top); }
+  #domain-braket .bk-box.source-box::before,
+  #domain-braket .bk-box.source-box::after{ content:''; position:absolute; top:50%; width:0; height:0; transform:translateY(-50%);
+    border-top:10px solid transparent; border-bottom:10px solid transparent; }
+  #domain-braket .bk-box.source-box::before{ left:-15px; border-right:13px solid var(--wave-top); }
+  #domain-braket .bk-box.source-box::after{ right:-15px; border-left:13px solid var(--wave-top); }
+  #domain-braket .bk-box.projector-box{ background:var(--element-fill); border:1.5px solid var(--element-stroke); color:#fff; }
+  #domain-braket .bk-box.gate-box{ background:#cfe9f7; border:1.5px solid #7fb3d0; color:#20475c; font-size:26px; font-weight:700; }
+  #domain-braket .bk-box.measurement-box{ background:#2b2f36; border:1.5px solid #14161a; flex-direction:column; gap:1px; }
+  @keyframes bk-element-flash-red {
+    0%, 100% { background: var(--element-fill); border-color: var(--element-stroke); }
+    50% { background: #ff2b2b; border-color: #7a1020; }
+  }
+  #domain-braket .bk-box.projector-box.flash{ animation: bk-element-flash-red 220ms ease-in-out 1; }
+  #domain-braket .bk-node-sub{ font:700 13px var(--sans); color:var(--bad); margin-top:8px; min-height:18px; text-align:center; line-height:1.25; }
+  #domain-braket .bk-node-sub .gate-name{ color:var(--ink-soft); font-size:11.5px; }
+
+  #domain-braket .measurement-flash{ font:700 20px var(--sans); color:#fff; height:0; line-height:1; opacity:0; }
+  @keyframes bk-measurement-bit-flash {
+    0% { opacity:0; transform: translateY(-0.5em) scale(0.7); }
+    20% { opacity:1; transform: translateY(-0.5em) scale(1.2); }
+    70% { opacity:1; transform: translateY(-0.5em) scale(1); }
+    100% { opacity:0; transform: translateY(-0.5em) scale(1); }
+  }
+  #domain-braket .measurement-flash.flash{ animation: bk-measurement-bit-flash 1.1s ease; }
+  #domain-braket .gauge-needle{ transform-origin:26px 32px; transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); }
+  #domain-braket .gauge-needle.pos-mid{ transform: rotate(0deg); }
+  #domain-braket .gauge-needle.pos-left{ transform: rotate(-34deg); }
+  #domain-braket .gauge-needle.pos-right{ transform: rotate(34deg); }
+  #domain-braket .measurement-row{ position:relative; display:flex; justify-content:center; }
+  #domain-braket .measurement-stats{ position:absolute; top:50%; transform:translateY(-50%);
+    font:700 13px var(--sans); color:var(--ink); line-height:1.6; white-space:nowrap; }
+  #domain-braket .measurement-stats.side-A{ right:100%; margin-right:10px; text-align:right; }
+  #domain-braket .measurement-stats.side-B{ left:100%; margin-left:10px; text-align:left; }
+  #domain-braket .measurement-basis-row{ display:flex; gap:4px; margin-top:8px; }
+  #domain-braket .measurement-basis-row button{ font:700 11px var(--sans); padding:3px 8px; border-radius:5px; border:1px solid #555;
+    background:#20242b; color:#cfd3da; cursor:pointer; }
+  #domain-braket .measurement-basis-row button.active{ background:var(--crimson); border-color:var(--crimson); color:#fff; }
+
+  #domain-braket .bk-connector{ flex:0 0 56px; height:0; border-top:2px dotted var(--line); position:relative; margin-top:64px; z-index:1; }
+  #domain-braket .bk-progress-marker{ position:absolute; top:0; left:50%; transform:translate(-50%,-50%); display:flex; flex-direction:column; align-items:center; }
+  #domain-braket .bk-progress-prob{ position:absolute; top:-22px; left:50%; transform:translateX(-50%); font:700 12.5px var(--sans); color:var(--crimson); white-space:nowrap; }
+
+  #domain-braket .bk-marker, #domain-braket .bk-marker-static{
+    width:48px; height:48px; border-radius:50%; background:var(--bad); border:2px solid #7a1020;
+    display:flex; align-items:center; justify-content:center; color:#fff; font-size:16px;
+    box-shadow:0 0 0 3px rgba(178,59,59,0.18);
+  }
+  #domain-braket .bk-marker-static{ width:40px; height:40px; font-size:14px; }
+  #domain-braket .bk-marker{ position:absolute; z-index:3; opacity:0; pointer-events:none;
+    transition-property:left, top, opacity; transition-timing-function:linear, linear, ease; }
+  #domain-braket .bk-marker.absorbed{ background:var(--ink-soft); border-color:#333; }
+  @keyframes bk-qubit-flash-red {
+    0%, 100% { background: var(--bad); box-shadow: 0 0 0 3px rgba(178,59,59,0.18); }
+    50% { background: #ff2b2b; box-shadow: 0 0 0 9px rgba(255,43,43,0.35); }
+  }
+  #domain-braket .bk-marker.flash{ animation: bk-qubit-flash-red 220ms ease-in-out 2; }
+  @keyframes bk-collapse-pulse {
+    0% { box-shadow: 0 0 0 3px rgba(178,59,59,0.18); }
+    40% { box-shadow: 0 0 0 10px rgba(238,194,74,0.75); }
+    100% { box-shadow: 0 0 0 3px rgba(178,59,59,0.18); }
+  }
+  #domain-braket .bk-marker.collapse{ animation: bk-collapse-pulse 520ms ease-out 1; }
+
+  /* ---- controls row (cards under each element) ---- */
+  #domain-braket .bk-controls-row{ display:flex; align-items:flex-start; padding:4px 84px 4px; }
+  #domain-braket .bk-spacer{ flex:0 0 56px; }
+  #domain-braket .bk-col{ flex:0 0 140px; width:140px; display:flex; justify-content:center; padding-top:8px; }
+  #domain-braket .bk-card{ flex:0 0 140px; width:140px; border:1px solid var(--line); border-radius:8px; padding:10px 10px 12px; background:#fdfcfa; }
+  :root[data-theme="dark"] #domain-braket .bk-card{ background:#2a2825; }
+  #domain-braket .bk-card.source-card{ border-color:var(--wave-top); }
+  #domain-braket .ec-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; gap:6px; }
+  #domain-braket .ec-head h3{ font-family:var(--display); font-weight:700; font-size:16px; margin:0; letter-spacing:.01em; }
+  #domain-braket .ec-side{ font:700 9.5px var(--sans); color:var(--ink-soft); text-transform:uppercase; letter-spacing:.03em; margin:-5px 0 7px; }
+  #domain-braket .ec-actions{ display:flex; align-items:center; gap:5px; flex-shrink:0; }
+  #domain-braket .pol-remove, #domain-braket .pol-convert{ width:20px; height:20px; border-radius:50%; background:#fff; cursor:pointer;
+    display:flex; align-items:center; justify-content:center; flex-shrink:0; padding:0; }
+  #domain-braket .pol-remove{ border:1.5px solid var(--ink-soft); color:var(--ink-soft); font:700 10px var(--sans); }
+  #domain-braket .pol-remove:hover{ border-color:var(--bad); color:var(--bad); }
+  #domain-braket .pol-convert{ border:1.5px solid #7fb3d0; color:#3d7fa3; font:700 11px var(--sans); }
+  #domain-braket .pol-convert:hover{ background:#e4f2fa; }
+  :root[data-theme="dark"] #domain-braket .pol-remove, :root[data-theme="dark"] #domain-braket .pol-convert{ background:#242220; }
+  #domain-braket .bk-quick-row{ display:grid; grid-template-columns:1fr 1fr; gap:5px; }
+  #domain-braket .bk-quick-row .quick-btn{ font:700 10.5px var(--sans); padding:5px 3px; width:100%; }
+  #domain-braket .bk-quick-row .quick-btn.source-btn{ font-size:12px; }
+  #domain-braket .source-formula{ margin-top:9px; text-align:center; font-size:11px; color:var(--ink-soft); }
+  #domain-braket .insert-btn{ width:28px; height:28px; border-radius:50%; border:1.5px solid var(--ink-soft); background:#fff; color:var(--ink-soft);
+    font:700 15px var(--sans); line-height:1; cursor:pointer; display:flex; align-items:center; justify-content:center; padding:0; }
+  :root[data-theme="dark"] #domain-braket .insert-btn{ background:#242220; }
+  #domain-braket .insert-btn:hover:not(:disabled){ border-color:var(--crimson); color:var(--crimson); background:var(--crimson-tint); }
+  #domain-braket .insert-btn:disabled{ opacity:.35; cursor:not-allowed; }
+
+  /* ---- run controls / results ---- */
+  #domain-braket .bk-counts{ font-size:13px; color:var(--ink-soft); margin-top:6px; }
+  #domain-braket .bk-counts b{ color:var(--ink); }
+  #domain-braket .bk-results{ display:grid; grid-template-columns:auto 1fr; gap:16px; margin-top:16px; align-items:start; }
+  @media (max-width:760px){ #domain-braket .bk-results{ grid-template-columns:1fr; } }
+  #domain-braket .bk-results .stats-grid{ margin-top:0; }
+  #domain-braket .bk-joint{ border:1px solid var(--line); border-radius:8px; padding:10px 12px 12px; background:#fdfcfa; }
+  :root[data-theme="dark"] #domain-braket .bk-joint{ background:#2a2825; }
+  #domain-braket .bk-joint-title{ font:700 10.5px var(--sans); text-transform:uppercase; letter-spacing:.03em; color:var(--ink-soft); margin-bottom:8px; }
+  #domain-braket .bk-joint table{ border-collapse:separate; border-spacing:5px; margin:-5px; }
+  #domain-braket .bk-joint th{ font:700 11px var(--sans); color:var(--ink-soft); padding:0 6px; white-space:nowrap; }
+  #domain-braket .bk-joint th.row-h{ text-align:right; }
+  #domain-braket .bk-jcell{ min-width:78px; text-align:center; font-family:var(--display); font-size:24px; font-weight:700; color:var(--crimson);
+    padding:6px 8px; border:1px solid var(--line); border-radius:6px; background:#fff; transition:background .25s; }
+  :root[data-theme="dark"] #domain-braket .bk-jcell{ background:#242220; }
+  #domain-braket .bk-jcell.agree{ background:#eaf1fa; }
+  :root[data-theme="dark"] #domain-braket .bk-jcell.agree{ background:#1f2c3a; }
+  @keyframes bk-cell-flash { 0% { box-shadow:0 0 0 0 rgba(47,143,91,0); } 30% { box-shadow:0 0 0 4px rgba(47,143,91,0.55); } 100% { box-shadow:0 0 0 0 rgba(47,143,91,0); } }
+  #domain-braket .bk-jcell.flash{ animation: bk-cell-flash 600ms ease-out 1; }
+  #domain-braket .bk-joint-note{ font-size:11px; color:var(--ink-soft); margin-top:8px; }
+
+  #domain-braket .math-trace-steps{ display:flex; flex-wrap:wrap; gap:12px; }
+  #domain-braket .trace-step{ background:#fff; border:1px solid var(--line); border-radius:6px; padding:10px 12px; min-width:230px; }
+  :root[data-theme="dark"] #domain-braket .trace-step{ background:#242220; }
+  #domain-braket .trace-step-title{ font:700 12.5px var(--sans); color:var(--ink); margin-bottom:6px; text-transform:uppercase; letter-spacing:.03em; }
+  #domain-braket .trace-row{ display:flex; gap:7px; align-items:center; margin-bottom:5px; font-size:12px; }
+  #domain-braket .trace-row:last-child{ margin-bottom:0; }
+  #domain-braket .trace-label{ color:var(--ink-soft); font-weight:700; flex-shrink:0; width:62px; }
+  #domain-braket .trace-step .katex{ font-size:1.05em; }
 </style>
 </head>
 <body>
@@ -441,13 +577,70 @@
     </div>
   </section>
 
-  <!-- ============================= BRA-KET (placeholder) ============================= -->
+  <!-- ============================= BRA-KET ============================= -->
   <section id="domain-braket" class="domain-panel">
     <div class="panel">
-      <div class="coming-soon">
-        <h2>Bra-Ket Mode</h2>
-        <p>A general, basis-independent view of the same two-qubit correlations &#8212; state vectors, projectors, and measurement outcomes in Dirac notation. Coming soon.</p>
+
+      <div class="diagram-wrap">
+        <div class="bk-diagram-inner">
+          <div class="bk-diagram" id="bk-diagram"></div>
+          <div class="bk-controls-row" id="bk-controls-row"></div>
+        </div>
       </div>
+
+      <div class="beam-controls">
+        <div class="btn-row">
+          <button class="btn primary" id="bk-send-1">Run 1 Shot</button>
+          <button class="btn" id="bk-send-5">Run 5 Shots</button>
+          <button class="btn" id="bk-send-1000">Run 1000 Shots</button>
+          <button class="btn" id="bk-show-prob">Show Probabilities</button>
+          <button class="btn" id="bk-clear">Clear Counts</button>
+          <button class="btn" id="bk-reset">Reset</button>
+        </div>
+        <div class="btn-row">
+          <span class="speed-label">Speed</span>
+          <div class="mode-switch small" id="bk-speed-switch">
+            <button data-speed="slow">Slow</button>
+            <button data-speed="medium" class="active">Medium</button>
+            <button data-speed="fast">Fast</button>
+          </div>
+        </div>
+      </div>
+      <div class="bk-counts" id="bk-counts"></div>
+      <div class="status" id="bk-status" style="margin-top:4px; font-size:13px; color:var(--ink-soft);"></div>
+
+      <div class="bk-results">
+        <div class="bk-joint">
+          <div class="bk-joint-title" id="bk-joint-title">Joint Outcomes (Both Measured)</div>
+          <table>
+            <tr><th></th><th>Bob 0</th><th>Bob 1</th></tr>
+            <tr><th class="row-h">Alice 0</th><td class="bk-jcell agree" id="bk-j-00">0</td><td class="bk-jcell" id="bk-j-01">0</td></tr>
+            <tr><th class="row-h">Alice 1</th><td class="bk-jcell" id="bk-j-10">0</td><td class="bk-jcell agree" id="bk-j-11">0</td></tr>
+          </table>
+          <div class="bk-joint-note">Shaded cells: Alice and Bob got the same bit.</div>
+        </div>
+        <div class="stats-grid">
+          <div class="stat-box"><div class="num" id="bk-stat-sent">0</div><div class="lbl">Pairs Sent</div></div>
+          <div class="stat-box"><div class="num" id="bk-stat-agree">0</div><div class="lbl" id="bk-lbl-agree">Outcomes Agree</div></div>
+          <div class="stat-box"><div class="num" id="bk-stat-disagree">0</div><div class="lbl" id="bk-lbl-disagree">Outcomes Disagree</div></div>
+          <div class="stat-box"><div class="num" id="bk-stat-corr">&#8212;</div><div class="lbl">Correlation E</div></div>
+        </div>
+      </div>
+
+      <details class="math-trace-details">
+        <summary class="math-trace-summary">State vectors, operators, and probabilities</summary>
+        <div class="math-trace">
+          <div class="math-trace-steps" id="bk-math-trace-steps"></div>
+          <div class="trace-note">
+            Alice&#8217;s operators act only on the first qubit (<em>M</em>&#8202;&#8855;&#8202;<em>I</em>) and Bob&#8217;s only on the second (<em>I</em>&#8202;&#8855;&#8202;<em>M</em>),
+            so the two sides commute &#8212; the order shown above never changes a probability.
+            A projector that blocks a qubit still counts as a measurement, so it collapses the partner too.
+            Correlation <em>E</em> = P(same) &#8722; P(different), taken over pairs where both qubits reach a measurement.
+            Alice&#8217;s own 0/1 statistics (counting every pair, whatever happens to Bob&#8217;s qubit) never depend on Bob&#8217;s choices &#8212; try it.
+          </div>
+        </div>
+      </details>
+
     </div>
   </section>
 
@@ -935,6 +1128,876 @@
   updateStatsDisplay();
   refreshMathTrace();
 
+})();
+</script>
+
+<!-- ============================= BRA-KET SCRIPT ============================= -->
+<script>
+(function(){
+  "use strict";
+  var root = document.getElementById('domain-braket');
+  function $(id){ return document.getElementById(id); }
+
+  // ---------------- complex helpers ----------------
+  function cx(re, im){ return { re: re, im: im || 0 }; }
+  function cadd(a,b){ return cx(a.re+b.re, a.im+b.im); }
+  function csub(a,b){ return cx(a.re-b.re, a.im-b.im); }
+  function cmul(a,b){ return cx(a.re*b.re - a.im*b.im, a.re*b.im + a.im*b.re); }
+  function cconj(a){ return cx(a.re, -a.im); }
+  function cscale(a,k){ return cx(a.re*k, a.im*k); }
+  function cabs2(a){ return a.re*a.re + a.im*a.im; }
+  var C0 = cx(0), C1 = cx(1), S = Math.SQRT1_2;
+
+  // ---------------- single-qubit kets, projectors, gates ----------------
+  // Standard convention: |+i> = (|0> + i|1>)/sqrt2, matching the R preset
+  // in the Polarization tab (h = 1/sqrt2, v = i/sqrt2).
+  var KETS = {
+    '0':  [C1, C0],        '1':  [C0, C1],
+    '+':  [cx(S), cx(S)],  '-':  [cx(S), cx(-S)],
+    '+_i':[cx(S), cx(0,S)],'-_i':[cx(S), cx(0,-S)]
+  };
+  var KET_ORDER = ['0','1','+','-','+_i','-_i'];
+  var ORTH = { '0':'1', '1':'0', '+':'-', '-':'+', '+_i':'-_i', '-_i':'+_i' };
+  var BASIS_KETS = { Z:['0','1'], X:['+','-'], Y:['+_i','-_i'] };
+  var GATES = {
+    Z:   [[C1, C0], [C0, cx(-1)]],
+    X:   [[C0, C1], [C1, C0]],
+    Y:   [[C0, cx(0,-1)], [cx(0,1), C0]],
+    H:   [[cx(S), cx(S)], [cx(S), cx(-S)]],
+    UZY: [[cx(S), cx(0,S)], [cx(0,S), cx(S)]], // |0> -> |+i>, |+i> -> i|1>
+    UXY: [[C1, C0], [C0, cx(0,1)]],            // |+> -> |+i>, |+i> -> |->
+    I:   [[C1, C0], [C0, C1]]
+  };
+  var GATE_PRESETS = [
+    { kind:'Z', name:'Pauli-Z' }, { kind:'X', name:'Pauli-X' },
+    { kind:'Y', name:'Pauli-Y' }, { kind:'H', name:'Hadamard (X↔Z)' },
+    { kind:'UZY', name:'Basis Change (Z↔Y)' }, { kind:'UXY', name:'Basis Change (X↔Y)' },
+    { kind:'I', name:'Identity' }, { kind:'D', name:'Decoherence' }
+  ];
+  var GATE_NAME = {};
+  GATE_PRESETS.forEach(function(p){ GATE_NAME[p.kind] = p.name; });
+  function projector(sym){
+    var k = KETS[sym];
+    return [[cmul(k[0],cconj(k[0])), cmul(k[0],cconj(k[1]))],
+            [cmul(k[1],cconj(k[0])), cmul(k[1],cconj(k[1]))]];
+  }
+
+  // Two-qubit basis index = 2a + b, i.e. |ab> with Alice's bit first.
+  var BELL = {
+    psi_minus: { tex:'\\Psi^{-}', psi:[C0, cx(S), cx(-S), C0] },
+    psi_plus:  { tex:'\\Psi^{+}', psi:[C0, cx(S), cx(S),  C0] },
+    phi_minus: { tex:'\\Phi^{-}', psi:[cx(S), C0, C0, cx(-S)] },
+    phi_plus:  { tex:'\\Phi^{+}', psi:[cx(S), C0, C0, cx(S)] }
+  };
+  var BELL_ORDER = ['psi_minus','psi_plus','phi_minus','phi_plus'];
+
+  // ---------------- 4x4 density-matrix engine ----------------
+  // A density matrix (rather than a state vector) lets projectors that
+  // block a qubit, and the Decoherence channel, be handled exactly --
+  // and it's what makes "one side is lost, the other still measures"
+  // come out with the right statistics.
+  function zeros(n){ var m=[]; for (var i=0;i<n;i++){ m.push([]); for (var j=0;j<n;j++) m[i].push(C0); } return m; }
+  function mm(A,B){
+    var n = A.length, R = zeros(n);
+    for (var i=0;i<n;i++) for (var j=0;j<n;j++){
+      var s = C0;
+      for (var k=0;k<n;k++) s = cadd(s, cmul(A[i][k], B[k][j]));
+      R[i][j] = s;
+    }
+    return R;
+  }
+  function dag(A){ var n=A.length, R=zeros(n); for (var i=0;i<n;i++) for (var j=0;j<n;j++) R[i][j]=cconj(A[j][i]); return R; }
+  function addM(A,B){ return A.map(function(r,i){ return r.map(function(v,j){ return cadd(v, B[i][j]); }); }); }
+  function scaleM(A,k){ return A.map(function(r){ return r.map(function(v){ return cscale(v,k); }); }); }
+  function tr(A){ var s=0; for (var i=0;i<A.length;i++) s += A[i][i].re; return s; }
+  function lift(M, side){
+    var L = zeros(4);
+    for (var a=0;a<2;a++) for (var b=0;b<2;b++) for (var a2=0;a2<2;a2++) for (var b2=0;b2<2;b2++){
+      L[2*a+b][2*a2+b2] = side === 'A' ? (b === b2 ? M[a][a2] : C0) : (a === a2 ? M[b][b2] : C0);
+    }
+    return L;
+  }
+  function applyOp(rho, M, side){ var L = lift(M, side); return mm(mm(L, rho), dag(L)); }
+  function depolarize(rho, side){
+    var out = scaleM(rho, 0.25);
+    ['X','Y','Z'].forEach(function(k){ out = addM(out, scaleM(applyOp(rho, GATES[k], side), 0.25)); });
+    return out;
+  }
+  function rhoFromPsi(psi){
+    var R = zeros(4);
+    for (var i=0;i<4;i++) for (var j=0;j<4;j++) R[i][j] = cmul(psi[i], cconj(psi[j]));
+    return R;
+  }
+  function normalizeRho(rho){ var t = tr(rho); return t > 1e-15 ? scaleM(rho, 1/t) : rho; }
+  function reduced(rho, side){
+    var r = zeros(2);
+    for (var x=0;x<2;x++) for (var y=0;y<2;y++) for (var o=0;o<2;o++){
+      var i = side === 'A' ? 2*x+o : 2*o+x, j = side === 'A' ? 2*y+o : 2*o+y;
+      r[x][y] = cadd(r[x][y], rho[i][j]);
+    }
+    return r;
+  }
+  function purity(rho){ var t=tr(rho), s=0; rho.forEach(function(r){ r.forEach(function(v){ s += cabs2(v); }); }); return s/(t*t); }
+  function expect(r, k){ // <k| r |k> for a 2x2 r
+    var s = C0;
+    for (var i=0;i<2;i++) for (var j=0;j<2;j++) s = cadd(s, cmul(cmul(cconj(k[i]), r[i][j]), k[j]));
+    return s.re;
+  }
+  function initialRho(){ return rhoFromPsi(BELL[bellKey].psi); }
+  function applyGateEl(rho, el, side){
+    return el.gateKind === 'D' ? depolarize(rho, side) : applyOp(rho, GATES[el.gateKind], side);
+  }
+
+  // ---------------- TeX helpers ----------------
+  var KERN = '\\mkern-1mu';
+  function ketTex(sym){ return '\\bigl|' + KERN + sym + '\\bigr\\rangle'; }
+  function projectorTex(sym){ return '\\bigl|' + KERN + sym + '\\bigr\\rangle\\bigl\\langle' + sym + KERN + '\\bigr|'; }
+  function gateSymbolTex(kind){
+    if (kind === 'D') return '\\Delta';
+    if (kind === 'UXY' || kind === 'UZY') return '\\textcolor{#2f6fb0}{U}';
+    return kind;
+  }
+  function gateButtonTex(kind){
+    if (kind === 'UXY') return 'X\\leftrightarrow Y';
+    if (kind === 'UZY') return 'Z\\leftrightarrow Y';
+    return gateSymbolTex(kind);
+  }
+  function gateOpTex(kind){
+    if (kind === 'UXY') return 'U_{X\\leftrightarrow Y}';
+    if (kind === 'UZY') return 'U_{Z\\leftrightarrow Y}';
+    if (kind === 'D') return '\\Delta';
+    return kind;
+  }
+  function elementTex(el){ return el.type === 'projector' ? projectorTex(el.sym) : gateSymbolTex(el.gateKind); }
+
+  function near(a,b){ return Math.abs(a-b) < 1e-6; }
+  function valTex(x){ // x >= 0
+    if (near(x,1)) return '1';
+    if (near(x,S)) return '\\tfrac{1}{\\sqrt{2}}';
+    if (near(x,0.5)) return '\\tfrac{1}{2}';
+    return String(Math.round(x*1000)/1000);
+  }
+  function cTex(c){
+    var re = Math.abs(c.re) < 1e-9 ? 0 : c.re, im = Math.abs(c.im) < 1e-9 ? 0 : c.im;
+    if (!re && !im) return '0';
+    if (!im) return (re < 0 ? '-' : '') + valTex(Math.abs(re));
+    var imPart = (valTex(Math.abs(im)) === '1' ? '' : valTex(Math.abs(im))) + 'i';
+    if (!re) return (im < 0 ? '-' : '') + imPart;
+    return (re < 0 ? '-' : '') + valTex(Math.abs(re)) + (im < 0 ? '-' : '+') + imPart;
+  }
+  function matTex(M){ return '\\begin{pmatrix}' + cTex(M[0][0]) + '&' + cTex(M[0][1]) + '\\\\' + cTex(M[1][0]) + '&' + cTex(M[1][1]) + '\\end{pmatrix}'; }
+  // A unit-magnitude coefficient as a sign/phase prefix: 1 -> "+", -i -> "-i", ...
+  function phaseTex(u, first){
+    if (near(u.re,1) && near(u.im,0)) return first ? '' : '+';
+    if (near(u.re,-1) && near(u.im,0)) return '-';
+    if (near(u.re,0) && near(u.im,1)) return first ? 'i' : '+i';
+    if (near(u.re,0) && near(u.im,-1)) return '-i';
+    return (first ? '' : '+') + '(' + cTex(u) + ')';
+  }
+  function basisKetTex(i){ return ketTex('' + (i >> 1) + (i & 1)); }
+  function psiTex(psi){
+    var nz = [];
+    for (var i=0;i<4;i++) if (cabs2(psi[i]) > 1e-9) nz.push(i);
+    var mags = nz.map(function(i){ return Math.sqrt(cabs2(psi[i])); });
+    var common = mags.every(function(m){ return near(m, mags[0]); });
+    if (common){
+      var inner = nz.map(function(i,j){ return phaseTex(cscale(psi[i], 1/mags[0]), j===0) + basisKetTex(i); }).join('');
+      if (nz.length === 1) return inner;
+      var f = valTex(mags[0]);
+      return (f === '1' ? '' : f) + '\\bigl(' + inner + '\\bigr)';
+    }
+    return nz.map(function(i,j){
+      var t = cTex(psi[i]);
+      var needsParen = /[+]|.-/.test(t.replace(/^-/, 'x'));
+      if (needsParen) t = '(' + t + ')';
+      return (j === 0 || t.charAt(0) === '-' ? '' : '+') + t + basisKetTex(i);
+    }).join('');
+  }
+  // Extracts the ket from a pure density matrix, with global phase fixed
+  // so the first non-zero amplitude is real and positive.
+  function pureKet(rho){
+    var t = tr(rho), j = 0;
+    for (var i=1;i<4;i++) if (rho[i][i].re > rho[j][j].re) j = i;
+    var d = Math.sqrt(rho[j][j].re / t);
+    var psi = []; for (var i2=0;i2<4;i2++) psi.push(cscale(rho[i2][j], 1/(d*t)));
+    for (var k=0;k<4;k++) if (cabs2(psi[k]) > 1e-9){
+      var ph = cscale(cconj(psi[k]), 1/Math.sqrt(cabs2(psi[k])));
+      psi = psi.map(function(v){ return cmul(v, ph); });
+      break;
+    }
+    return psi;
+  }
+  function canonicalKetOf(r){ // r: normalized 2x2; returns a KETS key or null
+    for (var n=0;n<KET_ORDER.length;n++) if (near(expect(r, KETS[KET_ORDER[n]]), 1)) return KET_ORDER[n];
+    return null;
+  }
+  // What a single qubit "looks like" on its own: a definite ket if its
+  // reduced state is pure, otherwise "?" (entangled, or decohered).
+  function reducedLabel(rho, side){
+    var r = reduced(rho, side), t = tr(r);
+    if (t < 1e-12) return null;
+    r = scaleM(r, 1/t);
+    if (purity(r) < 1 - 1e-6) return '?';
+    var sym = canonicalKetOf(r);
+    return ketTex(sym || '\\psi');
+  }
+  function stateTex(rho){
+    if (tr(rho) < 1e-12) return null;
+    if (purity(rho) < 1 - 1e-6) return '\\rho\\ \\text{(mixed)}';
+    var psi = pureKet(rho), exp = psiTex(psi), name = '';
+    BELL_ORDER.forEach(function(k){
+      var ov = C0;
+      for (var i=0;i<4;i++) ov = cadd(ov, cmul(cconj(BELL[k].psi[i]), psi[i]));
+      if (near(cabs2(ov), 1)) name = ketTex(BELL[k].tex);
+    });
+    if (!name){
+      var n = normalizeRho(rho), ra = scaleM(reduced(n,'A'),1), rb = reduced(n,'B');
+      var a = canonicalKetOf(ra), b = canonicalKetOf(rb);
+      var terms = psi.filter(function(v){ return cabs2(v) > 1e-9; }).length;
+      if (a && b && terms > 1) name = ketTex(a) + ketTex(b);
+    }
+    return name ? name + '=' + exp : exp;
+  }
+
+  function renderKatexIn(container){
+    container.querySelectorAll('.katex-src').forEach(function(node){
+      var src = node.getAttribute('data-tex');
+      try { katex.render(src, node, { throwOnError:false }); }
+      catch (e){ node.textContent = src; }
+    });
+  }
+  function katexSpan(tex){ return '<span class="katex-src" data-tex="' + tex.replace(/"/g, '&quot;') + '"></span>'; }
+
+  // ---------------- state ----------------
+  var MAX_PER_SIDE = 3;
+  var SIDE_NAME = { A:'Alice', B:'Bob' };
+  var bellKey, chains, bases, nextId = 1;
+  var showProb = false;
+  var counts, absorbed, lastOutcome = { A:null, B:null };
+  var speed = 'medium';
+  var SPEED_FACTOR = { slow:1.8, medium:1, fast:0.45 };
+  var animBusy = false;
+  var diagram = $('bk-diagram'), controlsRow = $('bk-controls-row');
+
+  function defaultSetup(){
+    bellKey = 'psi_minus';
+    chains = { A: [], B: [] };
+    bases = { A:'Z', B:'Z' };
+  }
+  function resetCountsOnly(){
+    counts = { sent:0, both:0, lost:{A:0,B:0}, singles:{A:[0,0],B:[0,0]}, joint:{'00':0,'01':0,'10':0,'11':0} };
+    absorbed = {};
+    lastOutcome = { A:null, B:null };
+  }
+  function pct(x){ return (Math.round(x*1000)/10) + '%'; }
+  function wait(ms){ return new Promise(function(r){ setTimeout(r, ms); }); }
+
+  // ---------------- exact probabilities ----------------
+  // Branches keyed by survival: "ss" (both alive), "ls" (Alice's lost), etc.
+  // A lost qubit gets no further operations; the blocked branch keeps the
+  // (I - P) collapse so the partner's statistics stay correct.
+  function exactBranches(){
+    var br = { ss: initialRho() };
+    ['A','B'].forEach(function(side){
+      var si = side === 'A' ? 0 : 1;
+      chains[side].forEach(function(el){
+        var nb = {};
+        function acc(k, r){ nb[k] = nb[k] ? addM(nb[k], r) : r; }
+        Object.keys(br).forEach(function(key){
+          var rho = br[key];
+          if (key.charAt(si) === 'l'){ acc(key, rho); return; }
+          if (el.type === 'projector'){
+            acc(key, applyOp(rho, projector(el.sym), side));
+            acc(si === 0 ? 'l' + key.charAt(1) : key.charAt(0) + 'l', applyOp(rho, projector(ORTH[el.sym]), side));
+          } else acc(key, applyGateEl(rho, el, side));
+        });
+        br = nb;
+      });
+    });
+    return br;
+  }
+  function exactStats(){
+    var br = exactBranches();
+    var out = { joint:{}, singles:{A:[0,0],B:[0,0]} };
+    var kA = BASIS_KETS[bases.A], kB = BASIS_KETS[bases.B];
+    for (var a=0;a<2;a++) for (var b=0;b<2;b++){
+      out.joint['' + a + b] = br.ss ? tr(applyOp(applyOp(br.ss, projector(kA[a]), 'A'), projector(kB[b]), 'B')) : 0;
+    }
+    Object.keys(br).forEach(function(key){
+      if (key.charAt(0) === 's') for (var a2=0;a2<2;a2++) out.singles.A[a2] += tr(applyOp(br[key], projector(kA[a2]), 'A'));
+      if (key.charAt(1) === 's') for (var b2=0;b2<2;b2++) out.singles.B[b2] += tr(applyOp(br[key], projector(kB[b2]), 'B'));
+    });
+    return out;
+  }
+  // One side on its own, after its first k elements (surviving branch):
+  // what Alice (or Bob) alone would see, with the partner untouched.
+  function sidePrefix(side, k){
+    var rho = initialRho();
+    for (var i=0;i<k;i++){
+      var el = chains[side][i];
+      rho = el.type === 'projector' ? applyOp(rho, projector(el.sym), side) : applyGateEl(rho, el, side);
+    }
+    return { prob: tr(rho), label: reducedLabel(rho, side) };
+  }
+
+  // ---------------- sampling one shot ----------------
+  // Both qubits advance one node per step. A side with a shorter chain
+  // reaches its measurement sooner, and its outcome collapses the partner
+  // right then -- which is exactly what the animation shows.
+  function clampP(p){ return p > 1 - 1e-9 ? 1 : (p < 1e-9 ? 0 : p); }
+  function simulateShot(){
+    var rho = initialRho();
+    var st = { A:{ alive:true, done:false, outcome:null }, B:{ alive:true, done:false, outcome:null } };
+    var steps = [];
+    var nSteps = Math.max(chains.A.length, chains.B.length) + 1;
+    var prevB = reducedLabel(rho, 'B'), midA = null;
+    for (var k=1;k<=nSteps;k++){
+      var step = { collapsed: { A:false, B:false } };
+      ['A','B'].forEach(function(side){
+        // A qubit's own reduced state can only change through its own
+        // operations or a partner's non-unitary one (projector/measurement),
+        // so a change across the partner's sub-step is a genuine collapse.
+        if (side === 'B'){
+          midA = reducedLabel(rho, 'A');
+          if (st.B.alive && !st.B.done && reducedLabel(rho, 'B') !== prevB) step.collapsed.B = true;
+        }
+        var s = st[side], n = chains[side].length;
+        if (!s.alive || s.done){ step[side] = { kind:'idle' }; return; }
+        if (k <= n){
+          var el = chains[side][k-1];
+          if (el.type === 'projector'){
+            var pass = applyOp(rho, projector(el.sym), side);
+            if (Math.random() < clampP(tr(pass) / tr(rho))){
+              rho = normalizeRho(pass);
+              step[side] = { kind:'element', idx:k-1, passed:true };
+            } else {
+              rho = normalizeRho(applyOp(rho, projector(ORTH[el.sym]), side));
+              s.alive = false;
+              step[side] = { kind:'element', idx:k-1, passed:false, id:el.id };
+            }
+          } else {
+            rho = applyGateEl(rho, el, side);
+            step[side] = { kind:'element', idx:k-1, passed:true };
+          }
+        } else {
+          var kets = BASIS_KETS[bases[side]];
+          var m0 = applyOp(rho, projector(kets[0]), side);
+          var outcome = Math.random() < clampP(tr(m0) / tr(rho)) ? 0 : 1;
+          rho = normalizeRho(outcome === 0 ? m0 : applyOp(rho, projector(kets[1]), side));
+          s.done = true; s.outcome = outcome;
+          step[side] = { kind:'measure', outcome:outcome };
+        }
+      });
+      step.labels = { A: reducedLabel(rho, 'A'), B: reducedLabel(rho, 'B') };
+      if (st.A.alive && step.A.kind !== 'idle' && step.labels.A !== midA) step.collapsed.A = true;
+      prevB = step.labels.B;
+      steps.push(step);
+    }
+    return { steps:steps, A:st.A, B:st.B };
+  }
+  function tallyShot(res){
+    counts.sent++;
+    res.steps.forEach(function(step){
+      ['A','B'].forEach(function(side){
+        var ev = step[side];
+        if (ev.kind === 'element' && !ev.passed) absorbed[ev.id] = (absorbed[ev.id] || 0) + 1;
+      });
+    });
+    ['A','B'].forEach(function(side){
+      if (!res[side].alive) counts.lost[side]++;
+      else { counts.singles[side][res[side].outcome]++; lastOutcome[side] = res[side].outcome; }
+    });
+    if (res.A.alive && res.B.alive){
+      counts.both++;
+      counts.joint['' + res.A.outcome + res.B.outcome]++;
+    }
+  }
+  function shotStatus(res){
+    var bits = function(side){ return SIDE_NAME[side] + ' measured ' + res[side].outcome + ' (' + bases[side] + ')'; };
+    if (res.A.alive && res.B.alive){
+      return bits('A') + ', ' + bits('B') + ' — outcomes ' + (res.A.outcome === res.B.outcome ? 'agree.' : 'disagree.');
+    }
+    if (!res.A.alive && !res.B.alive) return 'Both qubits were lost at projectors.';
+    var lost = res.A.alive ? 'B' : 'A', kept = lost === 'A' ? 'B' : 'A';
+    return SIDE_NAME[lost] + '’s qubit was lost at a projector; ' + bits(kept) + '.';
+  }
+
+  // ---------------- diagram ----------------
+  // Left to right: Alice's measurement, Alice's elements (outermost first),
+  // the source, Bob's elements, Bob's measurement. Connector (side, k)
+  // carries that side's qubit after its first k elements.
+  function renderDiagram(){
+    var html = measNodeHtml('A');
+    for (var i = chains.A.length - 1; i >= 0; i--){
+      html += connectorHtml('A', i + 1) + elementNodeHtml('A', i);
+    }
+    html += connectorHtml('A', 0) + sourceNodeHtml() + connectorHtml('B', 0);
+    for (var j = 0; j < chains.B.length; j++){
+      html += elementNodeHtml('B', j) + connectorHtml('B', j + 1);
+    }
+    html += measNodeHtml('B');
+    html += '<div class="bk-marker" id="bk-marker-A"></div><div class="bk-marker" id="bk-marker-B"></div>';
+    diagram.innerHTML = html;
+    renderKatexIn(diagram);
+    diagram.querySelectorAll('.measurement-basis-row button').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        if (animBusy) return;
+        bases[btn.getAttribute('data-bk-side')] = btn.getAttribute('data-basis');
+        resetCountsOnly();
+        refreshAll();
+      });
+    });
+  }
+  function sourceNodeHtml(){
+    return '<div class="bk-node" data-node="src">' +
+      '<div class="bk-node-title">Entangled Source</div>' +
+      '<div class="bk-box source-box">' + katexSpan(ketTex(BELL[bellKey].tex)) + '</div>' +
+      '<div class="bk-node-sub"></div></div>';
+  }
+  function elementSubHtml(el){
+    if (el.type === 'projector') return absorbed[el.id] ? 'Lost: ' + absorbed[el.id] : '';
+    return '<span class="gate-name">' + GATE_NAME[el.gateKind] + '</span>';
+  }
+  function elementNodeHtml(side, idx){
+    var el = chains[side][idx];
+    return '<div class="bk-node" data-node="' + side + '-' + idx + '">' +
+      '<div class="bk-node-title">' + (el.type === 'projector' ? 'Projector' : 'Gate') + '</div>' +
+      '<div class="bk-box ' + el.type + '-box">' + katexSpan(elementTex(el)) + '</div>' +
+      '<div class="bk-node-sub" data-sub-id="' + el.id + '">' + elementSubHtml(el) + '</div></div>';
+  }
+  function connectorHtml(side, k){
+    var inner = '';
+    if (showProb){
+      var p = sidePrefix(side, k);
+      if (p.prob > 1e-9 && p.label){
+        inner = '<div class="bk-progress-marker"><div class="bk-progress-prob">' + pct(p.prob) + '</div>' +
+          '<div class="bk-marker-static">' + katexSpan(p.label) + '</div></div>';
+      }
+    }
+    return '<div class="bk-connector">' + inner + '</div>';
+  }
+  function dialSvg(side, needlePos){
+    return '<svg width="52" height="40" viewBox="0 0 52 40" xmlns="http://www.w3.org/2000/svg">' +
+      '<path d="M 8 32 A 18 18 0 0 1 44 32" fill="none" stroke="#e7e9ec" stroke-width="2.5" stroke-linecap="round"/>' +
+      '<line class="gauge-needle ' + needlePos + '" id="bk-needle-' + side + '" x1="26" y1="32" x2="26" y2="14" stroke="#e7e9ec" stroke-width="2.5" stroke-linecap="round"/>' +
+      '<circle cx="26" cy="32" r="2.6" fill="#e7e9ec"/></svg>';
+  }
+  function needlePosClass(outcome){ return outcome === 0 ? 'pos-left' : outcome === 1 ? 'pos-right' : 'pos-mid'; }
+  function measStatsHtml(side){
+    var v0, v1;
+    if (showProb){
+      var ex = exactStats();
+      v0 = pct(ex.singles[side][0]); v1 = pct(ex.singles[side][1]);
+    } else {
+      v0 = counts.singles[side][0]; v1 = counts.singles[side][1];
+    }
+    return '<div>0 &ndash; ' + v0 + '</div><div>1 &ndash; ' + v1 + '</div>';
+  }
+  function measNodeHtml(side){
+    var basisBtns = ['Z','X','Y'].map(function(b){
+      return '<button data-bk-side="' + side + '" data-basis="' + b + '" class="' + (bases[side] === b ? 'active' : '') + '">' + b + '</button>';
+    }).join('');
+    return '<div class="bk-node" data-node="' + side + '-meas">' +
+      '<div class="bk-node-title">' + SIDE_NAME[side] + ' Measures</div>' +
+      '<div class="measurement-row">' +
+        '<div class="bk-box measurement-box"><div class="measurement-flash" id="bk-flash-' + side + '"></div>' +
+          dialSvg(side, needlePosClass(lastOutcome[side])) + '</div>' +
+        '<div class="measurement-stats side-' + side + '" id="bk-meas-stats-' + side + '">' + measStatsHtml(side) + '</div>' +
+      '</div>' +
+      '<div class="measurement-basis-row">' + basisBtns + '</div></div>';
+  }
+
+  // ---------------- controls row ----------------
+  function renderControlsRow(){
+    var sp = '<div class="bk-spacer"></div>';
+    var html = plusColHtml('A') + sp;
+    for (var i = chains.A.length - 1; i >= 0; i--) html += elementCardHtml('A', i) + sp;
+    html += sourceCardHtml();
+    for (var j = 0; j < chains.B.length; j++) html += sp + elementCardHtml('B', j);
+    html += sp + plusColHtml('B');
+    controlsRow.innerHTML = html;
+    renderKatexIn(controlsRow);
+    wireControls();
+  }
+  function plusColHtml(side){
+    var full = chains[side].length >= MAX_PER_SIDE;
+    return '<div class="bk-col"><button class="insert-btn" data-bk-add="' + side + '"' + (full ? ' disabled' : '') +
+      ' title="' + (full ? 'At most ' + MAX_PER_SIDE + ' elements per side' : 'Add an element to ' + SIDE_NAME[side] + '’s side') + '">+</button></div>';
+  }
+  function sourceCardHtml(){
+    var btns = BELL_ORDER.map(function(k){
+      return '<button class="quick-btn source-btn' + (k === bellKey ? ' active' : '') + '" data-bk-bell="' + k + '">' + katexSpan(ketTex(BELL[k].tex)) + '</button>';
+    }).join('');
+    return '<div class="bk-card source-card"><div class="ec-head"><h3>Source</h3></div>' +
+      '<div class="bk-quick-row">' + btns + '</div>' +
+      '<div class="source-formula">' + katexSpan(psiTex(BELL[bellKey].psi)) + '</div></div>';
+  }
+  function elementCardHtml(side, idx){
+    var el = chains[side][idx], btns;
+    var attrs = ' data-bk-side="' + side + '" data-bk-idx="' + idx + '"';
+    if (el.type === 'projector'){
+      btns = KET_ORDER.map(function(sym){
+        return '<button class="quick-btn' + (el.sym === sym ? ' active' : '') + '"' + attrs + ' data-sym="' + sym + '">' + katexSpan(projectorTex(sym)) + '</button>';
+      }).join('');
+    } else {
+      btns = GATE_PRESETS.map(function(p){
+        return '<button class="quick-btn' + (el.gateKind === p.kind ? ' active' : '') + '"' + attrs + ' data-kind="' + p.kind + '" title="' + p.name + '">' + katexSpan(gateButtonTex(p.kind)) + '</button>';
+      }).join('');
+    }
+    var other = el.type === 'projector' ? 'Gate' : 'Projector';
+    return '<div class="bk-card"><div class="ec-head"><h3>' + (el.type === 'projector' ? 'Projector' : 'Gate') + '</h3>' +
+      '<div class="ec-actions"><button class="pol-convert"' + attrs + ' title="Switch to ' + other + '">&#8646;</button>' +
+      '<button class="pol-remove"' + attrs + ' title="Remove">&#10005;</button></div></div>' +
+      '<div class="ec-side">' + SIDE_NAME[side] + '’s side</div>' +
+      '<div class="bk-quick-row">' + btns + '</div></div>';
+  }
+  function elOf(btn){ return chains[btn.getAttribute('data-bk-side')][Number(btn.getAttribute('data-bk-idx'))]; }
+  function wireControls(){
+    controlsRow.querySelectorAll('[data-bk-bell]').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        if (animBusy) return;
+        bellKey = btn.getAttribute('data-bk-bell');
+        rebuildEverything();
+      });
+    });
+    controlsRow.querySelectorAll('.quick-btn[data-bk-idx]').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        if (animBusy) return;
+        var el = elOf(btn);
+        if (btn.hasAttribute('data-sym')) el.sym = btn.getAttribute('data-sym');
+        else el.gateKind = btn.getAttribute('data-kind');
+        rebuildEverything();
+      });
+    });
+    controlsRow.querySelectorAll('.pol-convert').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        if (animBusy) return;
+        var el = elOf(btn);
+        if (el.type === 'projector'){ el.type = 'gate'; el.gateKind = 'Z'; delete el.sym; }
+        else { el.type = 'projector'; el.sym = '0'; delete el.gateKind; }
+        rebuildEverything();
+      });
+    });
+    controlsRow.querySelectorAll('.pol-remove').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        if (animBusy) return;
+        chains[btn.getAttribute('data-bk-side')].splice(Number(btn.getAttribute('data-bk-idx')), 1);
+        rebuildEverything();
+      });
+    });
+    controlsRow.querySelectorAll('[data-bk-add]').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var side = btn.getAttribute('data-bk-add');
+        if (animBusy || chains[side].length >= MAX_PER_SIDE) return;
+        chains[side].push({ id: nextId++, type:'projector', sym:'0' });
+        rebuildEverything();
+      });
+    });
+  }
+
+  // ---------------- results panel ----------------
+  function fmtE(e){ return (e > 0 ? '+' : e < 0 ? '−' : '') + Math.abs(e).toFixed(2); }
+  function updateStats(){
+    $('bk-counts').innerHTML = 'Sent: <b>' + counts.sent + '</b> &nbsp;|&nbsp; Both measured: <b>' + counts.both +
+      '</b> &nbsp;|&nbsp; Alice lost: <b>' + counts.lost.A + '</b> &nbsp;|&nbsp; Bob lost: <b>' + counts.lost.B + '</b>';
+    var j, agree, disagree, corr = '—';
+    if (showProb){
+      j = exactStats().joint;
+      agree = j['00'] + j['11']; disagree = j['01'] + j['10'];
+      if (agree + disagree > 1e-9) corr = fmtE((agree - disagree) / (agree + disagree));
+      ['00','01','10','11'].forEach(function(k){ $('bk-j-' + k).textContent = pct(j[k]); });
+      $('bk-stat-agree').textContent = pct(agree);
+      $('bk-stat-disagree').textContent = pct(disagree);
+      $('bk-joint-title').textContent = 'Joint Outcome Probabilities';
+      $('bk-lbl-agree').textContent = 'Agree Probability';
+      $('bk-lbl-disagree').textContent = 'Disagree Probability';
+    } else {
+      j = counts.joint;
+      agree = j['00'] + j['11']; disagree = j['01'] + j['10'];
+      if (agree + disagree > 0) corr = fmtE((agree - disagree) / (agree + disagree));
+      ['00','01','10','11'].forEach(function(k){ $('bk-j-' + k).textContent = j[k]; });
+      $('bk-stat-agree').textContent = agree;
+      $('bk-stat-disagree').textContent = disagree;
+      $('bk-joint-title').textContent = 'Joint Outcomes (Both Measured)';
+      $('bk-lbl-agree').textContent = 'Outcomes Agree';
+      $('bk-lbl-disagree').textContent = 'Outcomes Disagree';
+    }
+    $('bk-stat-sent').textContent = counts.sent;
+    $('bk-stat-corr').textContent = corr;
+  }
+  // Refreshes the live numbers in the diagram without re-rendering it, so
+  // an in-flight needle swing or bit flash isn't interrupted.
+  function refreshLiveCounts(){
+    ['A','B'].forEach(function(side){
+      var el = $('bk-meas-stats-' + side);
+      if (el) el.innerHTML = measStatsHtml(side);
+      chains[side].forEach(function(e){
+        var sub = diagram.querySelector('[data-sub-id="' + e.id + '"]');
+        if (sub) sub.innerHTML = elementSubHtml(e);
+      });
+    });
+    updateStats();
+  }
+
+  // ---------------- math trace ----------------
+  function traceRow(label, tex, plain){
+    return '<div class="trace-row"><span class="trace-label">' + label + '</span><span>' + (tex ? katexSpan(tex) : plain) + '</span></div>';
+  }
+  function updateMathTrace(){
+    var html = '';
+    var rho = initialRho();
+    html += '<div class="trace-step"><div class="trace-step-title">Source</div>' +
+      traceRow('State', ketTex(BELL[bellKey].tex) + '=' + psiTex(BELL[bellKey].psi)) +
+      traceRow('Alice alone', null, katexSpan(reducedLabel(rho,'A')) + '&nbsp; (&rho;<sub>A</sub> = I/2)') +
+      traceRow('Bob alone', null, katexSpan(reducedLabel(rho,'B')) + '&nbsp; (&rho;<sub>B</sub> = I/2)') + '</div>';
+    var dead = false;
+    ['A','B'].forEach(function(side){
+      chains[side].forEach(function(el){
+        var before = tr(rho), rows = '', opTex, title;
+        if (el.type === 'projector'){
+          title = SIDE_NAME[side] + ' · Projector';
+          opTex = projectorTex(el.sym);
+          rho = applyOp(rho, projector(el.sym), side);
+        } else if (el.gateKind === 'D'){
+          title = SIDE_NAME[side] + ' · Decoherence';
+          opTex = '\\Delta';
+          rho = depolarize(rho, side);
+        } else {
+          title = SIDE_NAME[side] + ' · Gate (' + el.gateKind.replace('UXY','X↔Y').replace('UZY','Z↔Y') + ')';
+          opTex = gateOpTex(el.gateKind);
+          rho = applyOp(rho, GATES[el.gateKind], side);
+        }
+        rows += traceRow('Operator', side === 'A' ? opTex + '\\otimes I' : 'I\\otimes ' + opTex);
+        if (el.type === 'projector') rows += traceRow('Matrix', opTex + '=' + matTex(projector(el.sym)));
+        else if (el.gateKind === 'D') rows += traceRow('Channel', null, 'Randomizes this qubit: &rho; &rarr; &frac14;(&rho; + X&rho;X + Y&rho;Y + Z&rho;Z)');
+        else rows += traceRow('Matrix', opTex + '=' + matTex(GATES[el.gateKind]));
+        if (dead || before < 1e-12){
+          dead = true;
+          rows += traceRow('State', null, 'Never reached (an earlier projector always blocks)');
+        } else {
+          if (el.type === 'projector') rows += traceRow('P(pass)', null, pct(tr(rho) / before));
+          var st = stateTex(rho);
+          rows += st ? traceRow('State', st) : traceRow('State', null, 'Always blocked here');
+          if (!st) dead = true;
+        }
+        html += '<div class="trace-step"><div class="trace-step-title">' + title + '</div>' + rows + '</div>';
+      });
+    });
+    var rows2 = traceRow('Bases', null, 'Alice ' + bases.A + ', Bob ' + bases.B);
+    if (dead || tr(rho) < 1e-12){
+      rows2 += traceRow('Joint', null, 'No pair ever reaches both measurements');
+    } else {
+      var n = normalizeRho(rho), kA = BASIS_KETS[bases.A], kB = BASIS_KETS[bases.B], same = 0, diff = 0, cells = [];
+      for (var a=0;a<2;a++) for (var b=0;b<2;b++){
+        var p = tr(applyOp(applyOp(n, projector(kA[a]), 'A'), projector(kB[b]), 'B'));
+        cells.push('P(' + a + b + ') = ' + pct(p));
+        if (a === b) same += p; else diff += p;
+      }
+      rows2 += traceRow('Outcome kets', '0\\to' + ketTex(kA[0]) + ',\\ 1\\to' + ketTex(kA[1]) + '\\ \\big|\\ 0\\to' + ketTex(kB[0]) + ',\\ 1\\to' + ketTex(kB[1]));
+      rows2 += traceRow('Joint', null, cells.join('<br>'));
+      rows2 += traceRow('E', null, fmtE(same - diff) + ' &nbsp;(given both measured)');
+    }
+    html += '<div class="trace-step"><div class="trace-step-title">Measurement</div>' + rows2 + '</div>';
+    var container = $('bk-math-trace-steps');
+    container.innerHTML = html;
+    renderKatexIn(container);
+  }
+
+  // ---------------- animation ----------------
+  function nodeEl(key){ return diagram.querySelector('[data-node="' + key + '"]'); }
+  function nodeCenter(key){
+    var d = diagram.getBoundingClientRect(), b = nodeEl(key).querySelector('.bk-box').getBoundingClientRect();
+    return { x: b.left + b.width/2 - d.left, y: b.top + b.height/2 - d.top };
+  }
+  function placeMarker(m, p){ m.style.transitionDuration = '0ms, 0ms, 200ms'; m.style.left = (p.x - 24) + 'px'; m.style.top = (p.y - 24) + 'px'; }
+  function moveMarker(m, p, ms){
+    return new Promise(function(resolve){
+      m.style.transitionDuration = ms + 'ms, ' + ms + 'ms, 200ms';
+      void m.getBoundingClientRect();
+      m.style.left = (p.x - 24) + 'px'; m.style.top = (p.y - 24) + 'px';
+      setTimeout(resolve, ms);
+    });
+  }
+  function setMarkerTex(m, tex){
+    if (m.getAttribute('data-tex') === tex) return false;
+    m.setAttribute('data-tex', tex);
+    m.innerHTML = katexSpan(tex);
+    renderKatexIn(m);
+    return true;
+  }
+  function travelMs(){ return Math.round(520 * SPEED_FACTOR[speed]); }
+  function swingNeedle(side, outcome){
+    var n = $('bk-needle-' + side);
+    if (!n) return;
+    n.classList.remove('pos-mid','pos-left','pos-right');
+    void n.getBoundingClientRect();
+    n.classList.add(needlePosClass(outcome));
+  }
+  function resetNeedles(){
+    ['A','B'].forEach(function(side){
+      var n = $('bk-needle-' + side);
+      if (n){ n.classList.remove('pos-left','pos-right'); n.classList.add('pos-mid'); }
+    });
+  }
+  function flashBit(side, outcome){
+    var el = $('bk-flash-' + side);
+    if (!el) return;
+    el.textContent = outcome;
+    el.classList.remove('flash'); void el.offsetWidth; el.classList.add('flash');
+  }
+  function flashJointCell(key){
+    var c = $('bk-j-' + key);
+    c.classList.remove('flash'); void c.offsetWidth; c.classList.add('flash');
+  }
+  function loseMarker(m, box){
+    m.classList.add('flash');
+    if (box) box.classList.add('flash');
+    return wait(460).then(function(){
+      m.classList.remove('flash');
+      if (box) box.classList.remove('flash');
+      m.classList.add('absorbed');
+      m.removeAttribute('data-tex');
+      m.innerHTML = '&#10005;';
+      return wait(350);
+    }).then(function(){ m.style.opacity = '0'; });
+  }
+  function setRunControlsDisabled(dis){
+    ['bk-send-1','bk-send-5','bk-send-1000','bk-show-prob','bk-clear','bk-reset'].forEach(function(id){ $(id).disabled = dis; });
+  }
+
+  function runOneShotAnimated(){
+    if (animBusy) return Promise.resolve();
+    animBusy = true;
+    setRunControlsDisabled(true);
+    var res = simulateShot();
+    var markers = { A: $('bk-marker-A'), B: $('bk-marker-B') };
+    var src = nodeCenter('src'), start = initialRho();
+    resetNeedles();
+    ['A','B'].forEach(function(side){
+      var m = markers[side];
+      m.classList.remove('absorbed','flash','collapse');
+      m.removeAttribute('data-tex');
+      placeMarker(m, src);
+      setMarkerTex(m, reducedLabel(start, side));
+      m.style.opacity = '1';
+    });
+    $('bk-status').textContent = 'Pair emitted — each qubit on its own is “?”: neither has a definite state yet.';
+
+    var chain = wait(120);
+    res.steps.forEach(function(step){
+      chain = chain.then(function(){
+        var moves = [];
+        ['A','B'].forEach(function(side){
+          var ev = step[side];
+          if (ev.kind === 'element') moves.push(moveMarker(markers[side], nodeCenter(side + '-' + ev.idx), travelMs()));
+          else if (ev.kind === 'measure') moves.push(moveMarker(markers[side], nodeCenter(side + '-meas'), travelMs()));
+        });
+        return Promise.all(moves);
+      }).then(function(){
+        var effects = [];
+        ['A','B'].forEach(function(side){
+          var ev = step[side], m = markers[side];
+          if (ev.kind === 'element' && !ev.passed){
+            effects.push(loseMarker(m, nodeEl(side + '-' + ev.idx).querySelector('.bk-box')));
+          } else if (ev.kind === 'measure'){
+            swingNeedle(side, ev.outcome);
+            flashBit(side, ev.outcome);
+            effects.push(wait(250).then(function(){ m.style.opacity = '0'; }));
+          }
+        });
+        // Update each surviving qubit's ket, and pulse any marker that was
+        // collapsed by its partner so that "spooky" update is easy to spot.
+        ['A','B'].forEach(function(side){
+          var ev = step[side], m = markers[side];
+          var gone = ev.kind === 'element' && !ev.passed;
+          if (gone || !step.labels[side] || m.style.opacity === '0') return;
+          setMarkerTex(m, step.labels[side]);
+          if (step.collapsed[side]){
+            m.classList.remove('collapse'); void m.offsetWidth; m.classList.add('collapse');
+          }
+        });
+        return Promise.all(effects);
+      });
+    });
+
+    return chain.then(function(){
+      tallyShot(res);
+      if (res.A.alive && res.B.alive) flashJointCell('' + res.A.outcome + res.B.outcome);
+      refreshLiveCounts();
+      $('bk-status').textContent = shotStatus(res);
+      return wait(300);
+    }).then(function(){
+      markers.A.style.opacity = '0'; markers.B.style.opacity = '0';
+      animBusy = false;
+      setRunControlsDisabled(false);
+    });
+  }
+
+  function runShots(n){
+    if (animBusy) return;
+    if (showProb) setShowProb(false);
+    if (n >= 100){
+      for (var i=0;i<n;i++) tallyShot(simulateShot());
+      renderDiagram();
+      updateStats();
+      $('bk-status').textContent = 'Ran ' + n + ' shots without animating them.';
+      return;
+    }
+    var p = Promise.resolve();
+    for (var k=0;k<n;k++) p = p.then(runOneShotAnimated);
+  }
+
+  // ---------------- wiring ----------------
+  function setShowProb(on){
+    showProb = on;
+    $('bk-show-prob').textContent = on ? 'Show Shots' : 'Show Probabilities';
+    $('bk-show-prob').classList.toggle('toggle-on', on);
+    renderDiagram();
+    updateStats();
+  }
+  function idleStatus(){
+    $('bk-status').textContent = (chains.A.length || chains.B.length)
+      ? 'Click “Run 1 Shot” to send one entangled pair through both circuits.'
+      : 'Click “Run 1 Shot” to send one entangled pair, or use + to add projectors and gates to either side.';
+  }
+  function refreshAll(){
+    renderDiagram();
+    updateStats();
+    updateMathTrace();
+    idleStatus();
+  }
+  function rebuildEverything(){
+    resetCountsOnly();
+    renderControlsRow();
+    refreshAll();
+  }
+
+  $('bk-send-1').addEventListener('click', function(){ runShots(1); });
+  $('bk-send-5').addEventListener('click', function(){ runShots(5); });
+  $('bk-send-1000').addEventListener('click', function(){ runShots(1000); });
+  $('bk-show-prob').addEventListener('click', function(){ if (!animBusy) setShowProb(!showProb); });
+  $('bk-clear').addEventListener('click', function(){
+    if (animBusy) return;
+    resetCountsOnly();
+    if (showProb) setShowProb(false); else refreshAll();
+  });
+  $('bk-reset').addEventListener('click', function(){
+    if (animBusy) return;
+    defaultSetup();
+    showProb = false;
+    $('bk-show-prob').textContent = 'Show Probabilities';
+    $('bk-show-prob').classList.remove('toggle-on');
+    rebuildEverything();
+  });
+  root.querySelectorAll('#bk-speed-switch button').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      speed = btn.getAttribute('data-speed');
+      root.querySelectorAll('#bk-speed-switch button').forEach(function(b){ b.classList.toggle('active', b === btn); });
+    });
+  });
+
+  defaultSetup();
+  rebuildEverything();
 })();
 </script>
 </body>
